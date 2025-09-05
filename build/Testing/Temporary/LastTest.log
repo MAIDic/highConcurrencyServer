@@ -1,0 +1,192 @@
+Start testing: Sep 05 10:47 台北標準時間
+----------------------------------------------------------
+1/7 Testing: FrameParserTest.ParseSingleCompletePacket
+1/7 Test: FrameParserTest.ParseSingleCompletePacket
+Command: "C:/Users/bill/Desktop/Project/highConcurrencyServer/build/Debug/run-tests.exe" "--gtest_filter=FrameParserTest.ParseSingleCompletePacket" "--gtest_also_run_disabled_tests"
+Directory: C:/Users/bill/Desktop/Project/highConcurrencyServer/build
+"FrameParserTest.ParseSingleCompletePacket" start time: Sep 05 10:47 台北標準時間
+Output:
+----------------------------------------------------------
+Running main() from C:\vcpkg\buildtrees\gtest\src\v1.17.0-0c449efaff.clean\googletest\src\gtest_main.cc
+Note: Google Test filter = FrameParserTest.ParseSingleCompletePacket
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameParserTest
+[ RUN      ] FrameParserTest.ParseSingleCompletePacket
+[       OK ] FrameParserTest.ParseSingleCompletePacket (0 ms)
+[----------] 1 test from FrameParserTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"FrameParserTest.ParseSingleCompletePacket" end time: Sep 05 10:47 台北標準時間
+"FrameParserTest.ParseSingleCompletePacket" time elapsed: 00:00:00
+----------------------------------------------------------
+
+2/7 Testing: FrameParserTest.ParseSplitPacket
+2/7 Test: FrameParserTest.ParseSplitPacket
+Command: "C:/Users/bill/Desktop/Project/highConcurrencyServer/build/Debug/run-tests.exe" "--gtest_filter=FrameParserTest.ParseSplitPacket" "--gtest_also_run_disabled_tests"
+Directory: C:/Users/bill/Desktop/Project/highConcurrencyServer/build
+"FrameParserTest.ParseSplitPacket" start time: Sep 05 10:47 台北標準時間
+Output:
+----------------------------------------------------------
+Running main() from C:\vcpkg\buildtrees\gtest\src\v1.17.0-0c449efaff.clean\googletest\src\gtest_main.cc
+Note: Google Test filter = FrameParserTest.ParseSplitPacket
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameParserTest
+[ RUN      ] FrameParserTest.ParseSplitPacket
+[       OK ] FrameParserTest.ParseSplitPacket (0 ms)
+[----------] 1 test from FrameParserTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"FrameParserTest.ParseSplitPacket" end time: Sep 05 10:47 台北標準時間
+"FrameParserTest.ParseSplitPacket" time elapsed: 00:00:00
+----------------------------------------------------------
+
+3/7 Testing: FrameParserTest.ParseStickyPackets
+3/7 Test: FrameParserTest.ParseStickyPackets
+Command: "C:/Users/bill/Desktop/Project/highConcurrencyServer/build/Debug/run-tests.exe" "--gtest_filter=FrameParserTest.ParseStickyPackets" "--gtest_also_run_disabled_tests"
+Directory: C:/Users/bill/Desktop/Project/highConcurrencyServer/build
+"FrameParserTest.ParseStickyPackets" start time: Sep 05 10:47 台北標準時間
+Output:
+----------------------------------------------------------
+Running main() from C:\vcpkg\buildtrees\gtest\src\v1.17.0-0c449efaff.clean\googletest\src\gtest_main.cc
+Note: Google Test filter = FrameParserTest.ParseStickyPackets
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameParserTest
+[ RUN      ] FrameParserTest.ParseStickyPackets
+[       OK ] FrameParserTest.ParseStickyPackets (0 ms)
+[----------] 1 test from FrameParserTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"FrameParserTest.ParseStickyPackets" end time: Sep 05 10:47 台北標準時間
+"FrameParserTest.ParseStickyPackets" time elapsed: 00:00:00
+----------------------------------------------------------
+
+4/7 Testing: FrameParserTest.ParseHeaderOnlyPacket
+4/7 Test: FrameParserTest.ParseHeaderOnlyPacket
+Command: "C:/Users/bill/Desktop/Project/highConcurrencyServer/build/Debug/run-tests.exe" "--gtest_filter=FrameParserTest.ParseHeaderOnlyPacket" "--gtest_also_run_disabled_tests"
+Directory: C:/Users/bill/Desktop/Project/highConcurrencyServer/build
+"FrameParserTest.ParseHeaderOnlyPacket" start time: Sep 05 10:47 台北標準時間
+Output:
+----------------------------------------------------------
+Running main() from C:\vcpkg\buildtrees\gtest\src\v1.17.0-0c449efaff.clean\googletest\src\gtest_main.cc
+Note: Google Test filter = FrameParserTest.ParseHeaderOnlyPacket
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameParserTest
+[ RUN      ] FrameParserTest.ParseHeaderOnlyPacket
+[       OK ] FrameParserTest.ParseHeaderOnlyPacket (0 ms)
+[----------] 1 test from FrameParserTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"FrameParserTest.ParseHeaderOnlyPacket" end time: Sep 05 10:47 台北標準時間
+"FrameParserTest.ParseHeaderOnlyPacket" time elapsed: 00:00:00
+----------------------------------------------------------
+
+5/7 Testing: FrameParserTest.HandleInvalidLengthTooSmall
+5/7 Test: FrameParserTest.HandleInvalidLengthTooSmall
+Command: "C:/Users/bill/Desktop/Project/highConcurrencyServer/build/Debug/run-tests.exe" "--gtest_filter=FrameParserTest.HandleInvalidLengthTooSmall" "--gtest_also_run_disabled_tests"
+Directory: C:/Users/bill/Desktop/Project/highConcurrencyServer/build
+"FrameParserTest.HandleInvalidLengthTooSmall" start time: Sep 05 10:47 台北標準時間
+Output:
+----------------------------------------------------------
+Running main() from C:\vcpkg\buildtrees\gtest\src\v1.17.0-0c449efaff.clean\googletest\src\gtest_main.cc
+Note: Google Test filter = FrameParserTest.HandleInvalidLengthTooSmall
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameParserTest
+[ RUN      ] FrameParserTest.HandleInvalidLengthTooSmall
+[       OK ] FrameParserTest.HandleInvalidLengthTooSmall (0 ms)
+[----------] 1 test from FrameParserTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"FrameParserTest.HandleInvalidLengthTooSmall" end time: Sep 05 10:47 台北標準時間
+"FrameParserTest.HandleInvalidLengthTooSmall" time elapsed: 00:00:00
+----------------------------------------------------------
+
+6/7 Testing: FrameParserTest.HandleInvalidLengthTooLarge
+6/7 Test: FrameParserTest.HandleInvalidLengthTooLarge
+Command: "C:/Users/bill/Desktop/Project/highConcurrencyServer/build/Debug/run-tests.exe" "--gtest_filter=FrameParserTest.HandleInvalidLengthTooLarge" "--gtest_also_run_disabled_tests"
+Directory: C:/Users/bill/Desktop/Project/highConcurrencyServer/build
+"FrameParserTest.HandleInvalidLengthTooLarge" start time: Sep 05 10:47 台北標準時間
+Output:
+----------------------------------------------------------
+Running main() from C:\vcpkg\buildtrees\gtest\src\v1.17.0-0c449efaff.clean\googletest\src\gtest_main.cc
+Note: Google Test filter = FrameParserTest.HandleInvalidLengthTooLarge
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameParserTest
+[ RUN      ] FrameParserTest.HandleInvalidLengthTooLarge
+[       OK ] FrameParserTest.HandleInvalidLengthTooLarge (0 ms)
+[----------] 1 test from FrameParserTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"FrameParserTest.HandleInvalidLengthTooLarge" end time: Sep 05 10:47 台北標準時間
+"FrameParserTest.HandleInvalidLengthTooLarge" time elapsed: 00:00:00
+----------------------------------------------------------
+
+7/7 Testing: FrameParserTest.HandleStickyPacketWithIncompleteTail
+7/7 Test: FrameParserTest.HandleStickyPacketWithIncompleteTail
+Command: "C:/Users/bill/Desktop/Project/highConcurrencyServer/build/Debug/run-tests.exe" "--gtest_filter=FrameParserTest.HandleStickyPacketWithIncompleteTail" "--gtest_also_run_disabled_tests"
+Directory: C:/Users/bill/Desktop/Project/highConcurrencyServer/build
+"FrameParserTest.HandleStickyPacketWithIncompleteTail" start time: Sep 05 10:47 台北標準時間
+Output:
+----------------------------------------------------------
+Running main() from C:\vcpkg\buildtrees\gtest\src\v1.17.0-0c449efaff.clean\googletest\src\gtest_main.cc
+Note: Google Test filter = FrameParserTest.HandleStickyPacketWithIncompleteTail
+[==========] Running 1 test from 1 test suite.
+[----------] Global test environment set-up.
+[----------] 1 test from FrameParserTest
+[ RUN      ] FrameParserTest.HandleStickyPacketWithIncompleteTail
+[       OK ] FrameParserTest.HandleStickyPacketWithIncompleteTail (0 ms)
+[----------] 1 test from FrameParserTest (0 ms total)
+
+[----------] Global test environment tear-down
+[==========] 1 test from 1 test suite ran. (0 ms total)
+[  PASSED  ] 1 test.
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Passed.
+"FrameParserTest.HandleStickyPacketWithIncompleteTail" end time: Sep 05 10:47 台北標準時間
+"FrameParserTest.HandleStickyPacketWithIncompleteTail" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 05 10:47 台北標準時間

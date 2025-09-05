@@ -1,0 +1,50 @@
+[2025-09-04 16:22:19.179] [info] [20880] Starting server...
+[2025-09-04 16:22:19.179] [info] [20880] Port: 12345
+[2025-09-04 16:22:19.179] [info] [20880] Detected 8 hardware threads
+[2025-09-04 16:22:19.180] [info] [20880] ServerRunner constructed for port 12345
+[2025-09-04 16:22:19.180] [info] [20880] Starting server with 8 threads...
+[2025-09-04 16:22:32.752] [info] [21932] Accepted connection from: 127.0.0.1
+[2025-09-04 16:22:32.752] [info] [21932] Session started for client: 127.0.0.1
+[2025-09-04 16:22:32.752] [info] [21932] Session started for client: 59823
+[2025-09-04 16:22:32.754] [info] [21932] Client disconnected: 127.0.0.1
+[2025-09-04 16:23:21.242] [info] [5512] Starting server...
+[2025-09-04 16:23:21.242] [info] [5512] Port: 12345
+[2025-09-04 16:23:21.242] [info] [5512] Detected 8 hardware threads
+[2025-09-04 16:23:21.243] [info] [5512] ServerRunner constructed for port 12345
+[2025-09-04 16:23:21.243] [info] [5512] Starting server with 8 threads...
+[2025-09-04 16:23:28.481] [info] [6856] Accepted connection from: 127.0.0.1
+[2025-09-04 16:23:28.481] [info] [6856] Session started for client: 127.0.0.1
+[2025-09-04 16:23:28.481] [info] [6856] Session started for client: 64852
+[2025-09-04 16:23:28.482] [info] [6856] Client disconnected: 127.0.0.1
+[2025-09-04 16:30:30.358] [info] [21620] Starting server...
+[2025-09-04 16:30:30.358] [info] [21620] Port: 12345
+[2025-09-04 16:30:30.358] [info] [21620] Detected 8 hardware threads
+[2025-09-04 16:30:30.359] [info] [21620] ServerRunner constructed for port 12345
+[2025-09-04 16:30:30.359] [info] [21620] Starting server with 8 threads...
+[2025-09-04 16:31:29.082] [info] [21788] Accepted connection from: 127.0.0.1:64832
+[2025-09-04 16:31:29.082] [info] [21788] Session started for client: 127.0.0.1:64832
+[2025-09-04 16:31:29.084] [info] [21788] Client disconnected: 127.0.0.1
+[2025-09-04 16:48:57.241] [info] [18368] Starting server...
+[2025-09-04 16:48:57.241] [info] [18368] Port: 12345
+[2025-09-04 16:48:57.241] [info] [18368] Detected 8 hardware threads
+[2025-09-04 16:48:57.242] [info] [18368] ServerRunner constructed for port 12345
+[2025-09-04 16:48:57.242] [info] [18368] Starting server with 8 threads...
+[2025-09-04 16:49:03.106] [info] [19684] Accepted connection from: 127.0.0.1:52605
+[2025-09-04 16:49:03.106] [info] [19684] Session started for client: 127.0.0.1:52605
+[2025-09-04 16:49:03.109] [info] [19684] Client disconnected: 127.0.0.1:52605
+[2025-09-05 08:50:27.662] [info] [18032] Starting server...
+[2025-09-05 08:50:27.662] [info] [18032] Port: 12345
+[2025-09-05 08:50:27.662] [info] [18032] Detected 8 hardware threads
+[2025-09-05 08:50:27.663] [info] [18032] ServerRunner constructed for port 12345
+[2025-09-05 08:50:27.663] [info] [18032] Starting server with 8 threads...
+[2025-09-05 08:50:34.691] [info] [4312] Accepted connection from: 127.0.0.1:50287
+[2025-09-05 08:50:34.692] [info] [4312] Session started for client: 127.0.0.1:50287
+[2025-09-05 08:50:34.693] [info] [4312] Client disconnected: 127.0.0.1:50287
+[2025-09-05 10:54:19.596] [info] [19252] Starting server...
+[2025-09-05 10:54:19.596] [info] [19252] Port: 12345
+[2025-09-05 10:54:19.596] [info] [19252] Detected 8 hardware threads
+[2025-09-05 10:54:19.597] [info] [19252] ServerRunner constructed for port 12345
+[2025-09-05 10:54:19.597] [info] [19252] Starting server with 8 threads...
+[2025-09-05 10:55:21.061] [info] [18524] Accepted connection from: 127.0.0.1:57624
+[2025-09-05 10:55:21.061] [info] [18524] Session started for client: 127.0.0.1:57624
+[2025-09-05 10:55:21.063] [info] [18524] Client disconnected: 127.0.0.1:57624

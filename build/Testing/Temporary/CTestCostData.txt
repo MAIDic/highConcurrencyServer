@@ -1,0 +1,9 @@
+ServerIntegrationTest.EchoTest 1 0
+FrameParserTest.ParseSingleCompletePacket 3 0.0313026
+FrameParserTest.ParseSplitPacket 3 0.0284685
+FrameParserTest.ParseStickyPackets 3 0.0291373
+FrameParserTest.ParseHeaderOnlyPacket 2 0.0433622
+FrameParserTest.HandleInvalidLengthTooSmall 2 0.044035
+FrameParserTest.HandleInvalidLengthTooLarge 2 0.0426214
+FrameParserTest.HandleStickyPacketWithIncompleteTail 2 0.042833
+---
