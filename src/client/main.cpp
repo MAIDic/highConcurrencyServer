@@ -62,7 +62,7 @@ public:
             // 連線過程出錯，增加失敗計數並記錄錯誤
             failure_count++;
             // 取得 logger，如果存在就記錄錯誤
-            if (auto logger = Logger::get("client")) {
+            if (auto logger = spdlog::get("client")) {
                 logger->error("Connection failed: {}", e.what());
             }
         }
@@ -110,13 +110,13 @@ private:
             
         } catch (const std::exception& e) {
             failure_count++;
-            if (auto logger = Logger::get("client")) {
+            if (auto logger = spdlog::get("client")) {
                 logger->error("Send/Receive error: {}", e.what());
             }
             stop_test.store(true, std::memory_order_relaxed);
         } catch (...) {
             failure_count++;
-            if (auto logger = Logger::get("client")) {
+            if (auto logger = spdlog::get("client")) {
                 logger->error("Send/Receive error: Unknown exception occurred.");
             }
             stop_test.store(true, std::memory_order_relaxed);
@@ -141,12 +141,12 @@ void run_qps_thread(const std::string& message, int sleep_time, std::vector<uint
     } catch (const std::exception& e) {
         // 確保執行緒不會因未捕捉的例外而崩潰，並記錄錯誤
         failure_count++;
-        if (auto logger = Logger::get("client")) {
+        if (auto logger = spdlog::get("client")) {
             logger->error("Unhandled exception in client thread: {}", e.what());
         }
     } catch (...) {
         failure_count++;
-        if (auto logger = Logger::get("client")) {
+        if (auto logger = spdlog::get("client")) {
             logger->error("Unhandled unknown exception in client thread.");
         }
     }
@@ -154,26 +154,33 @@ void run_qps_thread(const std::string& message, int sleep_time, std::vector<uint
 
 
 int main(int argc, char* argv[]) {
+
+     // 初始化spdlog的執行緒池(8192個佇列大小, 1個執行緒)
+    spdlog::init_thread_pool(8192, 1); 
+
+    // 建立一個名為 "client" 的 logger，同時輸出到控制台和檔案
+    auto logger = create_logger("client", "logs/client.log", "[%Y-%m-%d %H:%M:%S][%t][%^%l%$] %v");
+
+    if(!logger) {
+        std::cerr << "Logger initialization failed. Exiting." << std::endl;
+        return 1;
+    }
+
     if (argc != 5) {
-        // 使用 std::cerr 進行初始錯誤輸出，因為 Logger 可能尚未初始化
-        std::cerr << "Usage: " << argv[0] << " <concurrent_clients> <duration_seconds> <sleep_time> \"<message>\"" << std::endl;
-        std::cerr << "Example: " << argv[0] << " 100 10 10 \"HelloQPS\"" << std::endl;
+        logger->error("Usage: {} <concurrent_clients> <duration_seconds> <sleep_time_ms> <message>", argv[0]);
+        logger->error("Example: {} 100 60 10 \"Hello, World!\"", argv[0]);
         return 1;
     }
 
     try {
-        // 建立一個名為 "client" 的 logger，同時輸出到控制台和檔案
-        Logger::create("client", "logs/client_test.log", spdlog::level::info, true);
-        auto client_logger = Logger::get("client");
-
         const int concurrent_clients = std::stoi(argv[1]);
         const int duration_seconds = std::stoi(argv[2]);
         const int sleep_time = std::stoi(argv[3]);
         const std::string message = argv[4];
 
-        client_logger->info("Starting QPS test with: Concurrent Clients={}, Duration={}s, Sleep Time={}ms, Target={}:{}", 
+        logger->info("Starting QPS test with: Concurrent Clients={}, Duration={}s, Sleep Time={}ms, Target={}:{}", 
                             concurrent_clients, duration_seconds, sleep_time, HOST, PORT);
-        client_logger->info("----------------------------------------");
+        logger->info("----------------------------------------");
         
         // 為每個執行緒準備一個獨立的延遲向量
         std::vector<std::vector<uint64_t>> all_threads_latencies(concurrent_clients);
@@ -204,11 +211,11 @@ int main(int argc, char* argv[]) {
         auto end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end_time - start_time;
 
-        client_logger->info("--- Test Finished ---");
-        client_logger->info("Actual duration: {:.2f} seconds", elapsed.count());
-        client_logger->info("Total successful requests: {}", success_count.load());
-        client_logger->info("  - Content matched: {}", content_match_count.load());
-        client_logger->info("Total failed requests: {}", failure_count.load());
+        logger->info("--- Test Finished ---");
+        logger->info("Actual duration: {:.2f} seconds", elapsed.count());
+        logger->info("Total successful requests: {}", success_count.load());
+        logger->info("  - Content matched: {}", content_match_count.load());
+        logger->info("Total failed requests: {}", failure_count.load());
         
         uint64_t final_success_count = success_count.load();
         if (elapsed.count() > 0 && final_success_count > 0) {
@@ -240,31 +247,27 @@ int main(int argc, char* argv[]) {
                 p99_latency_ms = combined_latencies[p99_index] / 1e6;
             }
 
-            client_logger->info("Average QPS: {:.2f} req/s", qps);
-            client_logger->info("Average Latency: {:.2f} ms", avg_latency_ms);
-            client_logger->info("  - Min Latency: {:.2f} ms", min_latency_ms);
-            client_logger->info("  - Max Latency: {:.2f} ms", max_latency_ms);
-            client_logger->info("  - P99 Latency: {:.2f} ms", p99_latency_ms);
-            client_logger->info("Packet Accuracy: {:.2f} %", accuracy_rate);
+            logger->info("Average QPS: {:.2f} req/s", qps);
+            logger->info("Average Latency: {:.2f} ms", avg_latency_ms);
+            logger->info("  - Min Latency: {:.2f} ms", min_latency_ms);
+            logger->info("  - Max Latency: {:.2f} ms", max_latency_ms);
+            logger->info("  - P99 Latency: {:.2f} ms", p99_latency_ms);
+            logger->info("Packet Accuracy: {:.2f} %", accuracy_rate);
 
         } else if (elapsed.count() > 0) {
             // 處理沒有成功請求但有時間的情況
-            client_logger->warn("No successful requests were completed during the test.");
-            client_logger->info("Average QPS: 0.00 req/s");
+            logger->warn("No successful requests were completed during the test.");
+            logger->info("Average QPS: 0.00 req/s");
         }
-        client_logger->info("----------------------------------------");
+        logger->info("----------------------------------------");
 
     } catch (const std::exception& e) {
-        // 如果 Logger 已初始化，則使用它；否則退回到 std::cerr
-        auto logger = Logger::get("client");
-        if (logger) {
-            logger->critical("Unhandled exception in main: {}", e.what());
-        } else {
-            std::cerr << "Unhandled exception in main: " << e.what() << std::endl;
-        }
+        
+        logger->critical("Unhandled exception in main: {}", e.what());
+        spdlog::shutdown(); // 確保所有日誌都被寫入檔案
         return 1; // 發生未處理的例外時，以非零狀態碼退出
     }
 
-    Logger::shutdown(); // 確保所有日誌都被寫入檔案
+    spdlog::shutdown(); // 確保所有日誌都被寫入檔案
     return 0;
 }

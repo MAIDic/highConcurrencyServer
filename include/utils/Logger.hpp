@@ -6,59 +6,28 @@
 #include <spdlog/async.h>
 #include <memory>
 #include <string>
+#include <iostream>
 
-class Logger {
-public:
-
-    // 刪除建構函式，這個類別只提供靜態方法
-    Logger() = delete;
-
-    // 靜態方法：建立並註冊一個新的 Logger
-    static void create(const std::string& name, 
-                       const std::string& log_file_path,
-                       spdlog::level::level_enum level = spdlog::level::info,
-                       bool log_to_console = false,
-                       const std::string& pattern = "[%Y-%m-%d %H:%M:%S.%e] [%l] [%t] %v")
-    {
-        // 確保 spdlog 的執行緒池只被初始化一次
-        static std::once_flag init_flag;
-        std::call_once(init_flag, [](){
-            spdlog::init_thread_pool(8192, 1);
-        });
-
-        // 檢查是否已存在同名 logger
-        if (spdlog::get(name)) {
-            return;
-        }
-
-        try {
-            std::vector<spdlog::sink_ptr> sinks;
-            sinks.push_back(std::make_shared<spdlog::sinks::rotating_file_sink_mt>(log_file_path, 10 * 1024 * 1024, 10));
-
-            if (log_to_console) {
+std::shared_ptr<spdlog::logger> create_logger(const std::string& name, const std::string& filePath,const std::string& pattern){
+     try {
+                std::vector<spdlog::sink_ptr> sinks;
                 sinks.push_back(std::make_shared<spdlog::sinks::stdout_color_sink_mt>());
-            }
+                sinks.push_back(std::make_shared<spdlog::sinks::rotating_file_sink_mt>(filePath, 1048576 * 5, 3));
 
-            auto logger = std::make_shared<spdlog::async_logger>(name, sinks.begin(), sinks.end(), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
-            
-            // 使用傳入的 pattern 或預設值
-            logger->set_pattern(pattern);
-            logger->set_level(level);
-            logger->flush_on(level);
+                // 建立一個名為 "server" 的 logger
+                auto logger = std::make_shared<spdlog::async_logger>(name, begin(sinks), end(sinks), spdlog::thread_pool(), spdlog::async_overflow_policy::block);
 
-            spdlog::register_logger(logger);
+                // 設定 logger 的格式
+                logger->set_pattern(pattern);
+
+                // 註冊 logger 
+                spdlog::register_logger(logger);
+
+                return logger;
+
         } catch (const spdlog::spdlog_ex& ex) {
-            fprintf(stderr, "Log creation for '%s' failed: %s\n", name.c_str(), ex.what());
+            std::cerr << "Log initialization failed: " << ex.what() << std::endl;
+            return nullptr;
         }
-    }
+}
 
-    // 靜態方法：根據名稱獲取一個已存在的 Logger
-    static std::shared_ptr<spdlog::logger> get(const std::string& name) {
-        return spdlog::get(name);
-    }
-
-    // 靜態方法：關閉日誌系統
-    static void shutdown() {
-        spdlog::shutdown();
-    }
-};

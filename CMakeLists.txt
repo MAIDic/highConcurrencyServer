@@ -3,8 +3,13 @@ project(HighConcurrencyServer CXX)
 
 add_compile_options(/utf-8) 
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+if(MSVC)
+    # 設定 Debug 模式下的編譯旗標
+    set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+endif()
 
 # ------------------- 主要應用程式 -------------------
 find_package(asio CONFIG REQUIRED)
