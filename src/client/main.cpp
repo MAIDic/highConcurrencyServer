@@ -84,6 +84,13 @@ public:
             // 這會發送 close_notify 訊息給伺服器
             asio::error_code ec;
             stream_.shutdown(ec);
+        } catch (const asio::system_error& e) {
+            // 優先捕捉 asio::system_error 來記錄詳細資訊
+            failure_count++;
+            if (logger_) {
+                logger_->error("Connection failed with system error: {} (Category: {}, Code: {})", 
+                            e.what(), e.code().category().name(), e.code().value());
+            }
         } catch (const std::exception& e) {
             // 連線過程出錯，增加失敗計數並記錄錯誤
             failure_count++;
@@ -170,10 +177,16 @@ void run_qps_thread(const std::string& message, int sleep_time, std::vector<uint
         // 這是生產環境中防止中間人攻擊的關鍵步驟
         ssl_context.set_verify_mode(asio::ssl::verify_peer);
         // 載入用於驗證伺服器憑證的 CA 憑證檔案
-        ssl_context.load_verify_file("server.crt"); // 確保這個 CA 憑證檔存在
+        ssl_context.load_verify_file("certs/server.crt"); // 確保這個 CA 憑證檔存在
 
         QpsClient client(io_context, ssl_context, message, sleep_time, thread_latencies, logger);
         client.run();
+    } catch (const asio::system_error& e){
+        if (logger) {
+            // 記錄詳細的錯誤類別、錯誤碼和訊息
+            logger->error("Asio system error in client thread: {} (Category: {}, Code: {})", 
+                        e.what(), e.code().category().name(), e.code().value());
+        }
     } catch (const std::exception& e) {
         // 確保執行緒不會因未捕捉的例外而崩潰，並記錄錯誤
         failure_count++;

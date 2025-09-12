@@ -10482,3 +10482,97 @@
 [2025-09-12 11:43:27][53892][info]   - P99 Latency: 22.04 ms
 [2025-09-12 11:43:27][53892][info] Packet Accuracy: 100.00 %
 [2025-09-12 11:43:27][53892][info] ----------------------------------------
+[2025-09-12 15:41:55][17160][info] Starting QPS test with: Concurrent Clients=5, Duration=1s, Sleep Time=50ms, Target=127.0.0.1:12345
+[2025-09-12 15:41:55][17160][info] ----------------------------------------
+[2025-09-12 15:41:55][26032][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:41:55][51460][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:41:55][29364][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:41:55][47244][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:41:55][39820][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:41:56][17160][info] --- Test Finished ---
+[2025-09-12 15:41:56][17160][info] Actual duration: 1.01 seconds
+[2025-09-12 15:41:56][17160][info] Total successful requests: 0
+[2025-09-12 15:41:56][17160][info]   - Content matched: 0
+[2025-09-12 15:41:56][17160][info] Total failed requests: 5
+[2025-09-12 15:41:56][17160][warning] No successful requests were completed during the test.
+[2025-09-12 15:41:56][17160][info] Average QPS: 0.00 req/s
+[2025-09-12 15:41:56][17160][info] ----------------------------------------
+[2025-09-12 15:43:20][49200][info] Starting QPS test with: Concurrent Clients=5, Duration=1s, Sleep Time=50ms, Target=127.0.0.1:12345
+[2025-09-12 15:43:20][49200][info] ----------------------------------------
+[2025-09-12 15:43:20][25724][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:43:20][27048][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:43:20][38424][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:43:20][44868][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:43:20][37580][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 15:43:21][49200][info] --- Test Finished ---
+[2025-09-12 15:43:21][49200][info] Actual duration: 1.01 seconds
+[2025-09-12 15:43:21][49200][info] Total successful requests: 0
+[2025-09-12 15:43:21][49200][info]   - Content matched: 0
+[2025-09-12 15:43:21][49200][info] Total failed requests: 5
+[2025-09-12 15:43:21][49200][warning] No successful requests were completed during the test.
+[2025-09-12 15:43:21][49200][info] Average QPS: 0.00 req/s
+[2025-09-12 15:43:21][49200][info] ----------------------------------------
+[2025-09-12 16:13:42][53960][info] Starting QPS test with: Concurrent Clients=5, Duration=1s, Sleep Time=50ms, Target=127.0.0.1:12345
+[2025-09-12 16:13:42][53960][info] ----------------------------------------
+[2025-09-12 16:13:42][15100][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:13:42][20392][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:13:42][44744][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:13:42][47144][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:13:42][40480][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:13:43][53960][info] --- Test Finished ---
+[2025-09-12 16:13:43][53960][info] Actual duration: 1.01 seconds
+[2025-09-12 16:13:43][53960][info] Total successful requests: 0
+[2025-09-12 16:13:43][53960][info]   - Content matched: 0
+[2025-09-12 16:13:43][53960][info] Total failed requests: 5
+[2025-09-12 16:13:43][53960][warning] No successful requests were completed during the test.
+[2025-09-12 16:13:43][53960][info] Average QPS: 0.00 req/s
+[2025-09-12 16:13:43][53960][info] ----------------------------------------
+[2025-09-12 16:18:21][3540][info] Starting QPS test with: Concurrent Clients=5, Duration=1s, Sleep Time=50ms, Target=127.0.0.1:12345
+[2025-09-12 16:18:21][3540][info] ----------------------------------------
+[2025-09-12 16:18:21][18624][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:18:21][33436][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:18:21][50896][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:18:21][33740][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:18:21][24924][error] Connection failed: handshake: certificate verify failed (SSL routines)
+[2025-09-12 16:18:22][3540][info] --- Test Finished ---
+[2025-09-12 16:18:22][3540][info] Actual duration: 1.01 seconds
+[2025-09-12 16:18:22][3540][info] Total successful requests: 0
+[2025-09-12 16:18:22][3540][info]   - Content matched: 0
+[2025-09-12 16:18:22][3540][info] Total failed requests: 5
+[2025-09-12 16:18:22][3540][warning] No successful requests were completed during the test.
+[2025-09-12 16:18:22][3540][info] Average QPS: 0.00 req/s
+[2025-09-12 16:18:22][3540][info] ----------------------------------------
+[2025-09-12 16:23:16][44340][info] Starting QPS test with: Concurrent Clients=5, Duration=1s, Sleep Time=50ms, Target=127.0.0.1:12345
+[2025-09-12 16:23:16][44340][info] ----------------------------------------
+[2025-09-12 16:23:16][53576][error] Connection failed with system error: handshake: certificate verify failed (SSL routines) (Category: asio.ssl, Code: 167772294)
+[2025-09-12 16:23:16][46348][error] Connection failed with system error: handshake: certificate verify failed (SSL routines) (Category: asio.ssl, Code: 167772294)
+[2025-09-12 16:23:16][29140][error] Connection failed with system error: handshake: certificate verify failed (SSL routines) (Category: asio.ssl, Code: 167772294)
+[2025-09-12 16:23:16][26920][error] Connection failed with system error: handshake: certificate verify failed (SSL routines) (Category: asio.ssl, Code: 167772294)
+[2025-09-12 16:23:16][41524][error] Connection failed with system error: handshake: certificate verify failed (SSL routines) (Category: asio.ssl, Code: 167772294)
+[2025-09-12 16:23:17][44340][info] --- Test Finished ---
+[2025-09-12 16:23:17][44340][info] Actual duration: 1.01 seconds
+[2025-09-12 16:23:17][44340][info] Total successful requests: 0
+[2025-09-12 16:23:17][44340][info]   - Content matched: 0
+[2025-09-12 16:23:17][44340][info] Total failed requests: 5
+[2025-09-12 16:23:17][44340][warning] No successful requests were completed during the test.
+[2025-09-12 16:23:17][44340][info] Average QPS: 0.00 req/s
+[2025-09-12 16:23:17][44340][info] ----------------------------------------
+[2025-09-12 16:29:10][9804][info] Starting QPS test with: Concurrent Clients=5, Duration=1s, Sleep Time=50ms, Target=127.0.0.1:12345
+[2025-09-12 16:29:10][9804][info] ----------------------------------------
+[2025-09-12 16:29:10][34692][info] TLS handshake successful with server 127.0.0.1:12345
+[2025-09-12 16:29:10][54408][info] TLS handshake successful with server 127.0.0.1:12345
+[2025-09-12 16:29:10][15792][info] TLS handshake successful with server 127.0.0.1:12345
+[2025-09-12 16:29:10][45168][info] TLS handshake successful with server 127.0.0.1:12345
+[2025-09-12 16:29:10][22872][info] TLS handshake successful with server 127.0.0.1:12345
+[2025-09-12 16:29:11][9804][info] --- Test Finished ---
+[2025-09-12 16:29:11][9804][info] Actual duration: 1.02 seconds
+[2025-09-12 16:29:11][9804][info] Total successful requests: 75
+[2025-09-12 16:29:11][9804][info]   - Content matched: 75
+[2025-09-12 16:29:11][9804][info] Total failed requests: 0
+[2025-09-12 16:29:11][9804][info] Average QPS: 73.55 req/s
+[2025-09-12 16:29:11][9804][info] Average Latency: 0.82 ms
+[2025-09-12 16:29:11][9804][info]   - Min Latency: 0.65 ms
+[2025-09-12 16:29:11][9804][info]   - Max Latency: 1.42 ms
+[2025-09-12 16:29:11][9804][info]   - P99 Latency: 1.42 ms
+[2025-09-12 16:29:11][9804][info] Packet Accuracy: 100.00 %
+[2025-09-12 16:29:11][9804][info] ----------------------------------------

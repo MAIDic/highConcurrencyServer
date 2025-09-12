@@ -13074,4 +13074,141 @@
 [2025-09-12 11:43:27][42020][info] TLS handshake successful for client: 127.0.0.1:56873
 [2025-09-12 11:43:27][50940][info] TLS handshake successful for client: 127.0.0.1:56874
 [2025-09-12 11:43:27][42020][info] Client disconnected: 127.0.0.1:56874
-[2025-09-12 11:43:27][42908][info] Client discon
+[2025-09-12 11:43:27][42908][info] Client disconnected: 127.0.0.1:56873
+[2025-09-12 11:43:27][42020][info] Session destroyed for client: 127.0.0.1:56873
+[2025-09-12 11:43:27][37444][info] Session destroyed for client: 127.0.0.1:56874
+[2025-09-12 11:43:27][50940][info] Accepted connection from: 127.0.0.1:56875
+[2025-09-12 11:43:27][50940][info] Accepted connection from: 127.0.0.1:56876
+[2025-09-12 11:43:27][42020][info] Accepted connection from: 127.0.0.1:56877
+[2025-09-12 11:43:27][50940][info] TLS handshake successful for client: 127.0.0.1:56876
+[2025-09-12 11:43:27][42908][info] TLS handshake successful for client: 127.0.0.1:56875
+[2025-09-12 11:43:27][37444][info] Client disconnected: 127.0.0.1:56876
+[2025-09-12 11:43:27][42020][info] Client disconnected: 127.0.0.1:56875
+[2025-09-12 11:43:27][42020][info] Session destroyed for client: 127.0.0.1:56876
+[2025-09-12 11:43:27][42908][info] Session destroyed for client: 127.0.0.1:56875
+[2025-09-12 11:43:27][42020][info] TLS handshake successful for client: 127.0.0.1:56877
+[2025-09-12 11:43:27][42020][info] Client disconnected: 127.0.0.1:56877
+[2025-09-12 11:43:27][42020][info] Session destroyed for client: 127.0.0.1:56877
+[2025-09-12 15:39:13][44408][info] Stopping server...
+[2025-09-12 15:39:13][44408][info] All server threads joined. Server stopped.
+[2025-09-12 15:39:13][53272][info] Server exited cleanly.
+[2025-09-12 15:39:16][45124][info] Starting server...
+[2025-09-12 15:39:16][45124][info] Port: 12345
+[2025-09-12 15:39:16][45124][info] Detected 8 hardware threads
+[2025-09-12 15:39:16][45124][critical] Failed to set up SSL context: use_certificate_chain_file: 系統找不到指定的檔案。
+[2025-09-12 15:39:16][45124][critical] Exception: use_certificate_chain_file: 系統找不到指定的檔案。
+[2025-09-12 15:41:42][48884][info] Starting server...
+[2025-09-12 15:41:42][48884][info] Port: 12345
+[2025-09-12 15:41:42][48884][info] Detected 8 hardware threads
+[2025-09-12 15:41:42][48884][info] ServerRunner constructed for port 12345
+[2025-09-12 15:41:42][48884][info] Starting server with 8 threads...
+[2025-09-12 15:41:55][41580][info] Accepted connection from: 127.0.0.1:56842
+[2025-09-12 15:41:55][51848][info] Accepted connection from: 127.0.0.1:56840
+[2025-09-12 15:41:55][41580][info] Accepted connection from: 127.0.0.1:56843
+[2025-09-12 15:41:55][51848][info] Accepted connection from: 127.0.0.1:56839
+[2025-09-12 15:41:55][41580][info] Accepted connection from: 127.0.0.1:56841
+[2025-09-12 15:41:55][24496][error] TLS handshake failed for client 127.0.0.1:56843: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:41:55][27544][error] TLS handshake failed for client 127.0.0.1:56842: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:41:55][13904][error] TLS handshake failed for client 127.0.0.1:56840: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:41:55][24496][info] Session destroyed for client: 127.0.0.1:56843
+[2025-09-12 15:41:55][27544][info] Session destroyed for client: 127.0.0.1:56842
+[2025-09-12 15:41:55][51848][error] TLS handshake failed for client 127.0.0.1:56841: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:41:55][13904][info] Session destroyed for client: 127.0.0.1:56840
+[2025-09-12 15:41:55][51848][info] Session destroyed for client: 127.0.0.1:56841
+[2025-09-12 15:41:55][41616][error] TLS handshake failed for client 127.0.0.1:56839: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:41:55][41616][info] Session destroyed for client: 127.0.0.1:56839
+[2025-09-12 15:42:55][52504][info] Stopping server...
+[2025-09-12 15:42:55][52504][info] All server threads joined. Server stopped.
+[2025-09-12 15:42:55][48884][info] Server exited cleanly.
+[2025-09-12 15:43:11][25684][info] Starting server...
+[2025-09-12 15:43:11][25684][info] Port: 12345
+[2025-09-12 15:43:11][25684][info] Detected 8 hardware threads
+[2025-09-12 15:43:11][25684][info] ServerRunner constructed for port 12345
+[2025-09-12 15:43:11][25684][info] Starting server with 8 threads...
+[2025-09-12 15:43:20][39828][info] Accepted connection from: 127.0.0.1:65351
+[2025-09-12 15:43:20][45136][info] Accepted connection from: 127.0.0.1:65350
+[2025-09-12 15:43:20][39828][info] Accepted connection from: 127.0.0.1:65352
+[2025-09-12 15:43:20][45136][info] Accepted connection from: 127.0.0.1:65353
+[2025-09-12 15:43:20][39828][info] Accepted connection from: 127.0.0.1:65354
+[2025-09-12 15:43:20][46144][error] TLS handshake failed for client 127.0.0.1:65354: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:43:20][52244][error] TLS handshake failed for client 127.0.0.1:65350: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:43:20][15940][error] TLS handshake failed for client 127.0.0.1:65353: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:43:20][52244][info] Session destroyed for client: 127.0.0.1:65350
+[2025-09-12 15:43:20][46144][info] Session destroyed for client: 127.0.0.1:65354
+[2025-09-12 15:43:20][15940][info] Session destroyed for client: 127.0.0.1:65353
+[2025-09-12 15:43:20][45136][error] TLS handshake failed for client 127.0.0.1:65352: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:43:20][45136][info] Session destroyed for client: 127.0.0.1:65352
+[2025-09-12 15:43:20][30764][error] TLS handshake failed for client 127.0.0.1:65351: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 15:43:20][30764][info] Session destroyed for client: 127.0.0.1:65351
+[2025-09-12 16:13:03][56736][info] Stopping server...
+[2025-09-12 16:13:03][56736][info] All server threads joined. Server stopped.
+[2025-09-12 16:13:03][25684][info] Server exited cleanly.
+[2025-09-12 16:13:29][50660][info] Starting server...
+[2025-09-12 16:13:29][50660][info] Port: 12345
+[2025-09-12 16:13:29][50660][info] Detected 8 hardware threads
+[2025-09-12 16:13:29][50660][info] ServerRunner constructed for port 12345
+[2025-09-12 16:13:29][50660][info] Starting server with 8 threads...
+[2025-09-12 16:13:42][36972][info] Accepted connection from: 127.0.0.1:62342
+[2025-09-12 16:13:42][35744][info] Accepted connection from: 127.0.0.1:62340
+[2025-09-12 16:13:42][36972][info] Accepted connection from: 127.0.0.1:62341
+[2025-09-12 16:13:42][35744][info] Accepted connection from: 127.0.0.1:62339
+[2025-09-12 16:13:42][36972][info] Accepted connection from: 127.0.0.1:62343
+[2025-09-12 16:13:42][24048][error] TLS handshake failed for client 127.0.0.1:62340: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:13:42][24048][info] Session destroyed for client: 127.0.0.1:62340
+[2025-09-12 16:13:42][42856][error] TLS handshake failed for client 127.0.0.1:62339: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:13:42][42856][info] Session destroyed for client: 127.0.0.1:62339
+[2025-09-12 16:13:42][36972][error] TLS handshake failed for client 127.0.0.1:62341: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:13:42][35744][error] TLS handshake failed for client 127.0.0.1:62343: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:13:42][36972][info] Session destroyed for client: 127.0.0.1:62341
+[2025-09-12 16:13:42][35744][info] Session destroyed for client: 127.0.0.1:62343
+[2025-09-12 16:13:42][55240][error] TLS handshake failed for client 127.0.0.1:62342: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:13:42][55240][info] Session destroyed for client: 127.0.0.1:62342
+[2025-09-12 16:15:00][54576][info] Stopping server...
+[2025-09-12 16:15:00][54576][info] All server threads joined. Server stopped.
+[2025-09-12 16:15:00][50660][info] Server exited cleanly.
+[2025-09-12 16:18:17][13532][info] Starting server...
+[2025-09-12 16:18:17][13532][info] Port: 12345
+[2025-09-12 16:18:17][13532][info] Detected 8 hardware threads
+[2025-09-12 16:18:17][13532][info] ServerRunner constructed for port 12345
+[2025-09-12 16:18:17][13532][info] Starting server with 8 threads...
+[2025-09-12 16:18:21][54652][info] Accepted connection from: 127.0.0.1:56451
+[2025-09-12 16:18:21][54600][info] Accepted connection from: 127.0.0.1:56450
+[2025-09-12 16:18:21][54652][info] Accepted connection from: 127.0.0.1:56449
+[2025-09-12 16:18:21][54600][info] Accepted connection from: 127.0.0.1:56452
+[2025-09-12 16:18:21][56248][info] Accepted connection from: 127.0.0.1:56453
+[2025-09-12 16:18:21][40212][error] TLS handshake failed for client 127.0.0.1:56451: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:18:21][40212][info] Session destroyed for client: 127.0.0.1:56451
+[2025-09-12 16:18:21][56248][error] TLS handshake failed for client 127.0.0.1:56453: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:18:21][56248][info] Session destroyed for client: 127.0.0.1:56453
+[2025-09-12 16:18:21][26828][error] TLS handshake failed for client 127.0.0.1:56452: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:18:21][26828][info] Session destroyed for client: 127.0.0.1:56452
+[2025-09-12 16:18:21][54652][error] TLS handshake failed for client 127.0.0.1:56450: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:18:21][54652][info] Session destroyed for client: 127.0.0.1:56450
+[2025-09-12 16:18:21][40492][error] TLS handshake failed for client 127.0.0.1:56449: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:18:21][40492][info] Session destroyed for client: 127.0.0.1:56449
+[2025-09-12 16:22:38][31524][info] Stopping server...
+[2025-09-12 16:22:38][31524][info] All server threads joined. Server stopped.
+[2025-09-12 16:22:38][13532][info] Server exited cleanly.
+[2025-09-12 16:23:09][44196][info] Starting server...
+[2025-09-12 16:23:09][44196][info] Port: 12345
+[2025-09-12 16:23:09][44196][info] Detected 8 hardware threads
+[2025-09-12 16:23:09][44196][info] ServerRunner constructed for port 12345
+[2025-09-12 16:23:09][44196][info] Starting server with 8 threads...
+[2025-09-12 16:23:16][9080][info] Accepted connection from: 127.0.0.1:55664
+[2025-09-12 16:23:16][35064][info] Accepted connection from: 127.0.0.1:55665
+[2025-09-12 16:23:16][9080][info] Accepted connection from: 127.0.0.1:55667
+[2025-09-12 16:23:16][35064][info] Accepted connection from: 127.0.0.1:55663
+[2025-09-12 16:23:16][9080][info] Accepted connection from: 127.0.0.1:55666
+[2025-09-12 16:23:16][35064][error] TLS handshake failed for client 127.0.0.1:55663: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:23:16][35064][info] Session destroyed for client: 127.0.0.1:55663
+[2025-09-12 16:23:16][9080][error] TLS handshake failed for client 127.0.0.1:55666: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:23:16][9080][info] Session destroyed for client: 127.0.0.1:55666
+[2025-09-12 16:23:16][9080][error] TLS handshake failed for client 127.0.0.1:55665: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:23:16][9080][info] Session destroyed for client: 127.0.0.1:55665
+[2025-09-12 16:23:16][39272][error] TLS handshake failed for client 127.0.0.1:55667: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:23:16][39272][info] Session destroyed for client: 127.0.0.1:55667
+[2025-09-12 16:23:16][35064][error] TLS handshake failed for client 127.0.0.1:55664: tlsv1 alert unknown ca (SSL routines)
+[2025-09-12 16:23:16][35064][info] Session destroyed for client: 127.0.0.1:55664
+[2025-09-12 16:28:26][53840][info] Stopping server...
+[2025-09-12 16:28:26][53840][info] All server threads joined. Server stopped.
+[2025-09-12 16:28:26][44196][info] Server exited cleanly.

@@ -35,9 +35,9 @@ public:
                 // 針對 Diffie-Hellman 金鑰交換，強制每次交握都產生新的金鑰
                 asio::ssl::context::single_dh_use);
             
-            ssl_context_.use_certificate_chain_file("server.crt");
-            ssl_context_.use_private_key_file("server.key", asio::ssl::context::pem);
-            ssl_context_.use_tmp_dh_file("dhparam.pem");
+            ssl_context_.use_certificate_chain_file("certs/server.crt");
+            ssl_context_.use_private_key_file("certs/server.key", asio::ssl::context::pem);
+            ssl_context_.use_tmp_dh_file("certs/dhparam.pem");
             
         } catch (const std::exception& e) {
             logger_->critical("Failed to set up SSL context: {}", e.what());
