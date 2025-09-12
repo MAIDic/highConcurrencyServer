@@ -4,6 +4,7 @@
 #include <array>
 #include <deque>
 #include <asio.hpp>
+#include <asio/ssl.hpp>
 #include "utils/Logger.hpp"
 #include "frame/FrameParser.hpp"
 #include "frame/FrameBuilder.hpp"
@@ -14,18 +15,26 @@ using asio::ip::tcp;
 // 它繼承 enable_shared_from_this 以便安全地建立 shared_ptr
 class Session : public std::enable_shared_from_this<Session> {
 public:
-    // 在建構函式中，立即儲存遠端端點資訊
-    Session(tcp::socket socket, std::shared_ptr<spdlog::logger> logger) 
-        : socket_(std::move(socket)), 
-		  strand_(asio::make_strand(socket_.get_executor())),
+    explicit Session(asio::ssl::stream<tcp::socket> stream, std::shared_ptr<spdlog::logger> logger) 
+        : stream_(std::move(stream)), 
+		  strand_(asio::make_strand(stream_.get_executor())),
 		  remote_endpoint_str_(get_remote_endpoint_string()),
           is_closing_(false),
           logger_(logger) {}
 
     void start() {
-        // Server.hpp 中已記錄連線資訊，這裡直接開始讀取
-        logger_->info("Session started for client: {}", remote_endpoint_str_);
-        do_read();
+        // 在開始讀寫之前，必須先進行 TLS 交握
+        auto self = shared_from_this();
+        stream_.async_handshake(asio::ssl::stream_base::server,
+            asio::bind_executor(strand_, [this, self](const asio::error_code& ec) {
+                if (!ec) {
+                    logger_->info("TLS handshake successful for client: {}", remote_endpoint_str_);
+                    do_read();
+                } else {
+                    logger_->error("TLS handshake failed for client {}: {}", remote_endpoint_str_, ec.message());
+                    // 交握失敗，不需要手動關閉，Session 物件會自動銷毀
+                }
+            }));
     }
 	~Session() {
         // 在解構時，我們只記錄日誌。關閉 socket 的操作將透過 RAII 和非同步操作的生命週期管理來自動處理。
@@ -39,10 +48,12 @@ private:
             if (is_closing_) return;
             is_closing_ = true;
             
-            if (socket_.is_open()) {
+            // 確保 socket 仍然開啟
+            if (stream_.lowest_layer().is_open()) {
                 asio::error_code ec;
-                socket_.shutdown(tcp::socket::shutdown_both, ec);
-                socket_.close(ec);
+                // 優雅地關閉 SSL 連線
+                // async_shutdown 會嘗試發送 "close_notify"
+                stream_.async_shutdown([this, self](const asio::error_code& ec) {}); 
             }
             
             // 清空寫入佇列
@@ -52,9 +63,9 @@ private:
     // 輔助函式，用於安全地獲取一次端點字串
     std::string get_remote_endpoint_string() {
         try {
-            return socket_.remote_endpoint().address().to_string() + ":" + std::to_string(socket_.remote_endpoint().port());
+            return stream_.lowest_layer().remote_endpoint().address().to_string() + ":" + std::to_string(stream_.lowest_layer().remote_endpoint().port());
         } catch (const std::exception& e) {
-            logger_->warn("Could not get remote endpoint on session creation: {}", e.what());
+            // 在 SSL 交握前獲取端點可能會失敗，這在某些平台上是正常的
             return "unknown";
         }
     }
@@ -63,12 +74,12 @@ private:
         if (is_closing_) return; // 如果正在關閉，則不進行讀取
 
         auto self = shared_from_this();
-        socket_.async_read_some(asio::buffer(read_buffer_),
+        stream_.async_read_some(asio::buffer(read_buffer_),
             // 使用 asio::bind_executor 將回呼函式綁定到 strand
             asio::bind_executor(strand_, [this, self](const asio::error_code& ec, std::size_t length) {
                 if (is_closing_) return;
 
-                if (!socket_.is_open() || ec) {
+                if (ec) {
                     if (ec != asio::error::eof) {
                         logger_->error("Read error from {}: {}", remote_endpoint_str_, ec.message());
                     } else {
@@ -141,7 +152,7 @@ private:
         }
 
         // 使用佇列最前端的封包進行非同步寫入
-        asio::async_write(socket_, asio::buffer(write_packets_.front()),
+        asio::async_write(stream_, asio::buffer(write_packets_.front()),
             // 同樣將寫入的回呼函式綁定到 strand
             asio::bind_executor(strand_, [this, self = shared_from_this()](const asio::error_code& ec, std::size_t /*length*/) {
                 if(is_closing_) return;
@@ -160,7 +171,7 @@ private:
             }));
     }
 
-    tcp::socket socket_;
+    asio::ssl::stream<tcp::socket> stream_;
     // 為每個 Session 建立一個 strand 來保證其操作的序列化
     asio::strand<asio::any_io_executor> strand_;
     std::string remote_endpoint_str_; // 儲存客戶端端點資訊

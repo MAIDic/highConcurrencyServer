@@ -185,8 +185,8 @@ CMAKE_STATIC_LINKER_FLAGS_RELEASE:STRING=
 // during RELWITHDEBINFO builds.
 CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO:STRING=
 
-//No help, variable specified on the command line.
-CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
+//The CMake toolchain file
+CMAKE_TOOLCHAIN_FILE:FILEPATH=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
 
 //If this value is on, makefiles will be generated without the
 // .SILENT directive, and all commands will be echoed to the console
@@ -205,6 +205,24 @@ HighConcurrencyServer_IS_TOP_LEVEL:STATIC=ON
 
 //Value Computed by CMake
 HighConcurrencyServer_SOURCE_DIR:STATIC=C:/Users/bill/Desktop/Project/highConcurrencyServer
+
+//Path to a library.
+LIB_EAY_DEBUG:FILEPATH=C:/vcpkg/installed/x64-windows/debug/lib/libcrypto.lib
+
+//Path to a library.
+LIB_EAY_RELEASE:FILEPATH=C:/vcpkg/installed/x64-windows/lib/libcrypto.lib
+
+//Path to a file.
+OPENSSL_APPLINK_SOURCE:FILEPATH=C:/vcpkg/installed/x64-windows/include/openssl/applink.c
+
+//Path to a file.
+OPENSSL_INCLUDE_DIR:PATH=C:/vcpkg/installed/x64-windows/include
+
+//Path to a library.
+SSL_EAY_DEBUG:FILEPATH=C:/vcpkg/installed/x64-windows/debug/lib/libssl.lib
+
+//Path to a library.
+SSL_EAY_RELEASE:FILEPATH=C:/vcpkg/installed/x64-windows/lib/libssl.lib
 
 //Automatically copy dependencies into the output directory for
 // executables.
@@ -393,8 +411,12 @@ CMAKE_STATIC_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 CMAKE_TOOLCHAIN_FILE-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_VERBOSE_MAKEFILE
 CMAKE_VERBOSE_MAKEFILE-ADVANCED:INTERNAL=1
+//Details about finding OpenSSL
+FIND_PACKAGE_MESSAGE_DETAILS_OpenSSL:INTERNAL=[optimized;C:/vcpkg/installed/x64-windows/lib/libcrypto.lib;debug;C:/vcpkg/installed/x64-windows/debug/lib/libcrypto.lib][C:/vcpkg/installed/x64-windows/include][ ][v3.5.2()]
 //Details about finding Threads
 FIND_PACKAGE_MESSAGE_DETAILS_Threads:INTERNAL=[TRUE][v()]
+//ADVANCED property for variable: OPENSSL_INCLUDE_DIR
+OPENSSL_INCLUDE_DIR-ADVANCED:INTERNAL=1
 //Install the dependencies listed in your manifest:
 //\n    If this is off, you will have to manually install your dependencies.
 //\n    See https://github.com/microsoft/vcpkg/tree/master/docs/specifications/manifests.md

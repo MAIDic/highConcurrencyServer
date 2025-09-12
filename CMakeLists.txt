@@ -14,16 +14,25 @@ endif()
 # ------------------- 主要應用程式 -------------------
 find_package(asio CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED) 
+find_package(OpenSSL REQUIRED)
 
 add_executable(server-app src/server/main.cpp)
 target_include_directories(server-app PRIVATE include)
-target_link_libraries(server-app PRIVATE asio::asio spdlog::spdlog)
+target_link_libraries(server-app PRIVATE 
+    asio::asio 
+    spdlog::spdlog 
+    OpenSSL::SSL 
+    OpenSSL::Crypto )
 
 # ------------------- 客戶端應用程式 -------------------
 add_executable(client-app src/client/main.cpp)
 
 
-target_link_libraries(client-app PRIVATE asio::asio spdlog::spdlog)
+target_link_libraries(client-app PRIVATE 
+    asio::asio 
+    spdlog::spdlog  
+    OpenSSL::SSL 
+    OpenSSL::Crypto )
 
 target_include_directories(client-app PRIVATE include)
 

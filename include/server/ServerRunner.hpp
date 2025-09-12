@@ -8,6 +8,7 @@
 #include <vector>
 #include <thread>
 #include <asio.hpp>
+#include <asio/ssl.hpp>
 
 
 class ServerRunner {
@@ -16,11 +17,32 @@ public:
     ServerRunner(short port, std::size_t thread_count, std::shared_ptr<spdlog::logger> logger)
         : port_(port),
           thread_count_(thread_count),
-          io_context_(),
-          server_(io_context_, port_, logger), 
+          io_context_(), // io_context 必須在 ssl_context 之前初始化
+          ssl_context_(asio::ssl::context::tls_server),
+          server_(io_context_, port_, ssl_context_, logger), 
           work_guard_(asio::make_work_guard(io_context_)),
           logger_(logger) // 儲存 logger
     {
+        try {
+            // 設定 TLS 版本和選項
+            ssl_context_.set_options(
+                asio::ssl::context::default_workarounds |
+                // 明確禁用不安全的協定
+                asio::ssl::context::no_sslv2 |
+                asio::ssl::context::no_sslv3 |
+                asio::ssl::context::no_tlsv1 |
+                asio::ssl::context::no_tlsv1_1 |
+                // 針對 Diffie-Hellman 金鑰交換，強制每次交握都產生新的金鑰
+                asio::ssl::context::single_dh_use);
+            
+            ssl_context_.use_certificate_chain_file("server.crt");
+            ssl_context_.use_private_key_file("server.key", asio::ssl::context::pem);
+            ssl_context_.use_tmp_dh_file("dhparam.pem");
+            
+        } catch (const std::exception& e) {
+            logger_->critical("Failed to set up SSL context: {}", e.what());
+            throw; // 拋出異常，終止程式
+        }
         logger_->info("ServerRunner constructed for port {}", port);
     }
 
@@ -60,6 +82,7 @@ private:
     short port_;
     std::size_t thread_count_;
     asio::io_context io_context_;
+    asio::ssl::context ssl_context_;
     Server server_;
     asio::executor_work_guard<asio::io_context::executor_type> work_guard_;
     std::vector<std::thread> threads_;

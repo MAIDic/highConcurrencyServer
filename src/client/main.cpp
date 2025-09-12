@@ -5,6 +5,7 @@
 #include <atomic>
 #include <chrono>
 #include <asio.hpp>
+#include <asio/ssl.hpp>
 #include "frame/FrameHeader.hpp" // 引用 FrameHeader
 #include "utils/Logger.hpp"      // 新增：整合日誌系統
 
@@ -23,14 +24,30 @@ std::atomic<bool> stop_test(false);
 
 class QpsClient {
 public:
-    // 接收一個指向執行緒局部延遲向量的指標
-    QpsClient(asio::io_context& io_context, const std::string& message, int sleep_time, std::vector<uint64_t>* thread_latencies)
-        : socket_(io_context),
+    // 修改建構函式以接收 SSL context
+    QpsClient(asio::io_context& io_context, asio::ssl::context& ssl_context, const std::string& message, int sleep_time, std::vector<uint64_t>* thread_latencies, std::shared_ptr<spdlog::logger> logger)
+        : stream_(io_context, ssl_context),
           resolver_(io_context),
           message_(message),
           request_body_(message.begin(), message.end()),
-          sleep_time_(sleep_time)
+          sleep_time_(sleep_time),
+          logger_(logger)
     {
+        // 設定 SNI (Server Name Indication)，這對於許多 TLS 伺服器是必需的
+        // 尤其是當一台伺服器擁有多個憑證時
+        if (!SSL_set_tlsext_host_name(stream_.native_handle(), HOST.c_str())) {
+            asio::error_code ec{static_cast<int>(::ERR_get_error()), asio::error::get_ssl_category()};
+            throw asio::system_error{ec};
+        }
+
+        // 設定 TLS 版本和選項，與伺服器端對應
+        ssl_context.set_options(
+            asio::ssl::context::default_workarounds |
+            asio::ssl::context::no_sslv2 |
+            asio::ssl::context::no_sslv3 |
+            asio::ssl::context::no_tlsv1 |
+            asio::ssl::context::no_tlsv1_1);
+
         endpoints_ = resolver_.resolve(HOST, std::to_string(PORT));
         thread_latencies_ = thread_latencies; // 儲存指標
 
@@ -51,19 +68,28 @@ public:
     // 執行 QPS 測試迴圈
     void run() {
         try {
-            asio::connect(socket_, endpoints_);
-            
+            // 連線到 TCP 層
+            asio::connect(stream_.lowest_layer(), endpoints_);
+
+            // 進行 TLS 交握
+            stream_.handshake(asio::ssl::stream_base::client);
+            logger_->info("TLS handshake successful with server {}:{}", HOST, PORT);
+
             // 當 stop_test 旗標為 false 時，持續收發
             while (!stop_test.load(std::memory_order_relaxed)) {
                 send_and_receive(sleep_time_);
             }
 
+            // --- 優雅關閉 TLS 連線 ---
+            // 這會發送 close_notify 訊息給伺服器
+            asio::error_code ec;
+            stream_.shutdown(ec);
         } catch (const std::exception& e) {
             // 連線過程出錯，增加失敗計數並記錄錯誤
             failure_count++;
             // 取得 logger，如果存在就記錄錯誤
-            if (auto logger = spdlog::get("client")) {
-                logger->error("Connection failed: {}", e.what());
+            if (logger_) {
+                logger_->error("Connection failed: {}", e.what());
             }
         }
     }
@@ -75,18 +101,18 @@ private:
             auto request_start_time = std::chrono::high_resolution_clock::now();
 
             // 1. 同步寫入 (已預先打包好)
-            asio::write(socket_, asio::buffer(request_packet_));
+            asio::write(stream_, asio::buffer(request_packet_));
 
             // 2. 同步讀取回音 Header
             FrameHeader reply_header;
-            asio::read(socket_, asio::buffer(&reply_header, sizeof(FrameHeader)));
+            asio::read(stream_, asio::buffer(&reply_header, sizeof(FrameHeader)));
             decode_header(reply_header);
 
             // 3. 同步讀取回音 Body
             const size_t body_length = reply_header.total_length - sizeof(FrameHeader);
             if (body_length > 0) {
                 std::vector<char> reply_body(body_length);
-                asio::read(socket_, asio::buffer(reply_body));
+                asio::read(stream_, asio::buffer(reply_body));
                 
                 // 啟用內容驗證
                 if (reply_body.size() == request_body_.size() && 
@@ -123,30 +149,40 @@ private:
         }
     }
 
-    tcp::socket socket_;
     tcp::resolver resolver_;
+    asio::ssl::stream<tcp::socket> stream_;
     tcp::resolver::results_type endpoints_;
     std::string message_;
     std::vector<char> request_body_;
     std::vector<char> request_packet_; // 預先打包好的完整封包
     int sleep_time_;                   // 每次請求後的睡眠時間 (毫秒)
     std::vector<uint64_t>* thread_latencies_; // 指向執行緒局部延遲向量的指標
+    std::shared_ptr<spdlog::logger> logger_; // 日誌記錄器
 };
 
-void run_qps_thread(const std::string& message, int sleep_time, std::vector<uint64_t>* thread_latencies) {
+void run_qps_thread(const std::string& message, int sleep_time, std::vector<uint64_t>* thread_latencies, std::shared_ptr<spdlog::logger> logger) {
     try {
+        // 為每個執行緒建立自己的 io_context 和 ssl_context
         asio::io_context io_context;
-        QpsClient client(io_context, message, sleep_time, thread_latencies);
+        asio::ssl::context ssl_context(asio::ssl::context::tls_client);
+
+        // 設定客戶端去驗證伺服器憑證
+        // 這是生產環境中防止中間人攻擊的關鍵步驟
+        ssl_context.set_verify_mode(asio::ssl::verify_peer);
+        // 載入用於驗證伺服器憑證的 CA 憑證檔案
+        ssl_context.load_verify_file("server.crt"); // 確保這個 CA 憑證檔存在
+
+        QpsClient client(io_context, ssl_context, message, sleep_time, thread_latencies, logger);
         client.run();
     } catch (const std::exception& e) {
         // 確保執行緒不會因未捕捉的例外而崩潰，並記錄錯誤
         failure_count++;
-        if (auto logger = spdlog::get("client")) {
+        if (logger) {
             logger->error("Unhandled exception in client thread: {}", e.what());
         }
     } catch (...) {
         failure_count++;
-        if (auto logger = spdlog::get("client")) {
+        if (logger) {
             logger->error("Unhandled unknown exception in client thread.");
         }
     }
@@ -189,7 +225,7 @@ int main(int argc, char* argv[]) {
         std::vector<std::thread> threads;
         for (int i = 0; i < concurrent_clients; ++i) {
             // 將對應的延遲向量指標傳遞給執行緒
-            threads.emplace_back(run_qps_thread, std::ref(message), sleep_time, &all_threads_latencies[i]);
+            threads.emplace_back(run_qps_thread, std::ref(message), sleep_time, &all_threads_latencies[i], logger);
         }
 
         // 開始計時
