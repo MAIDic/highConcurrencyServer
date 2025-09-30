@@ -84,7 +84,14 @@
         "set": "cpp",
         "span": "cpp",
         "cwctype": "cpp",
-        "fstream": "cpp"
+        "fstream": "cpp",
+        "bitset": "cpp",
+        "random": "cpp",
+        "filesystem": "cpp",
+        "numeric": "cpp",
+        "ranges": "cpp",
+        "regex": "cpp",
+        "unordered_set": "cpp"
     },
     "geminicodeassist.customCommands": {
         "e": "用繁體中文解釋這段程式碼，可以提出建議但不要提出修改請求",

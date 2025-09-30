@@ -13,6 +13,10 @@ public:
         : acceptor_(io_context, tcp::endpoint(tcp::v4(), port)),
         ssl_context_(ssl_context),
         logger_(logger) {
+
+        // 設定 SO_REUSEADDR 選項，允許伺服器快速重啟
+        acceptor_.set_option(asio::socket_base::reuse_address(true));
+        acceptor_.listen(asio::socket_base::max_listen_connections);
         do_accept();
     }
 

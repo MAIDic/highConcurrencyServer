@@ -8,6 +8,9 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 if(MSVC)
     # 設定 Debug 模式下的編譯旗標
+    # 解決 Windows 上的 "_WIN32_WINNT not defined" 警告
+    # 0x0A00 對應 Windows 10
+    add_compile_definitions(_WIN32_WINNT=0x0A00)
     set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
 endif()
 
@@ -15,6 +18,7 @@ endif()
 find_package(asio CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED) 
 find_package(OpenSSL REQUIRED)
+find_package(opentelemetry-cpp CONFIG REQUIRED)
 
 add_executable(server-app src/server/main.cpp)
 target_include_directories(server-app PRIVATE include)
@@ -22,7 +26,11 @@ target_link_libraries(server-app PRIVATE
     asio::asio 
     spdlog::spdlog 
     OpenSSL::SSL 
-    OpenSSL::Crypto )
+    OpenSSL::Crypto 
+    opentelemetry-cpp::api
+    opentelemetry-cpp::sdk
+    opentelemetry-cpp::prometheus_exporter
+    )
 
 # ------------------- 客戶端應用程式 -------------------
 add_executable(client-app src/client/main.cpp)

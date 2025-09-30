@@ -80,6 +80,7 @@ C:/Program Files/CMake/share/cmake-4.1/Modules/FindOpenSSL.cmake
 C:/Program Files/CMake/share/cmake-4.1/Modules/FindPackageHandleStandardArgs.cmake
 C:/Program Files/CMake/share/cmake-4.1/Modules/FindPackageMessage.cmake
 C:/Program Files/CMake/share/cmake-4.1/Modules/FindThreads.cmake
+C:/Program Files/CMake/share/cmake-4.1/Modules/FindZLIB.cmake
 C:/Program Files/CMake/share/cmake-4.1/Modules/GoogleTest.cmake
 C:/Program Files/CMake/share/cmake-4.1/Modules/Internal/CMakeCXXLinkerInformation.cmake
 C:/Program Files/CMake/share/cmake-4.1/Modules/Internal/CMakeCommonLinkerInformation.cmake
@@ -104,6 +105,11 @@ C:/Users/bill/Desktop/Project/highConcurrencyServer/build/CMakeFiles/4.1.0/CMake
 C:/Users/bill/Desktop/Project/highConcurrencyServer/build/CMakeFiles/4.1.0/CMakeSystem.cmake
 C:/vcpkg/installed/x64-windows/share/asio/asio-config.cmake
 C:/vcpkg/installed/x64-windows/share/asio/asio-targets.cmake
+C:/vcpkg/installed/x64-windows/share/civetweb/civetweb-config-version.cmake
+C:/vcpkg/installed/x64-windows/share/civetweb/civetweb-config.cmake
+C:/vcpkg/installed/x64-windows/share/civetweb/civetweb-targets-debug.cmake
+C:/vcpkg/installed/x64-windows/share/civetweb/civetweb-targets-release.cmake
+C:/vcpkg/installed/x64-windows/share/civetweb/civetweb-targets.cmake
 C:/vcpkg/installed/x64-windows/share/fmt/fmt-config-version.cmake
 C:/vcpkg/installed/x64-windows/share/fmt/fmt-config.cmake
 C:/vcpkg/installed/x64-windows/share/fmt/fmt-targets-debug.cmake
@@ -115,9 +121,34 @@ C:/vcpkg/installed/x64-windows/share/gtest/GTestTargets-debug.cmake
 C:/vcpkg/installed/x64-windows/share/gtest/GTestTargets-release.cmake
 C:/vcpkg/installed/x64-windows/share/gtest/GTestTargets.cmake
 C:/vcpkg/installed/x64-windows/share/openssl/vcpkg-cmake-wrapper.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/component-definitions.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/find-package-support-functions.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-api-target.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-config-version.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-config.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-exporters_in_memory-target-debug.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-exporters_in_memory-target-release.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-exporters_in_memory-target.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-exporters_ostream-target-debug.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-exporters_ostream-target-release.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-exporters_ostream-target.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-exporters_prometheus-target-debug.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-exporters_prometheus-target-release.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-exporters_prometheus-target.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-ext_common-target.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-sdk-target-debug.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-sdk-target-release.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/opentelemetry-cpp-sdk-target.cmake
+C:/vcpkg/installed/x64-windows/share/opentelemetry-cpp/thirdparty-dependency-definitions.cmake
+C:/vcpkg/installed/x64-windows/share/prometheus-cpp/prometheus-cpp-config-version.cmake
+C:/vcpkg/installed/x64-windows/share/prometheus-cpp/prometheus-cpp-config.cmake
+C:/vcpkg/installed/x64-windows/share/prometheus-cpp/prometheus-cpp-targets-debug.cmake
+C:/vcpkg/installed/x64-windows/share/prometheus-cpp/prometheus-cpp-targets-release.cmake
+C:/vcpkg/installed/x64-windows/share/prometheus-cpp/prometheus-cpp-targets.cmake
 C:/vcpkg/installed/x64-windows/share/spdlog/spdlogConfig.cmake
 C:/vcpkg/installed/x64-windows/share/spdlog/spdlogConfigTargets-debug.cmake
 C:/vcpkg/installed/x64-windows/share/spdlog/spdlogConfigTargets-release.cmake
 C:/vcpkg/installed/x64-windows/share/spdlog/spdlogConfigTargets.cmake
 C:/vcpkg/installed/x64-windows/share/spdlog/spdlogConfigVersion.cmake
+C:/vcpkg/installed/x64-windows/share/zlib/vcpkg-cmake-wrapper.cmake
 C:/vcpkg/scripts/buildsystems/vcpkg.cmake

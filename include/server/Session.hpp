@@ -8,6 +8,9 @@
 #include "utils/Logger.hpp"
 #include "frame/FrameParser.hpp"
 #include "frame/FrameBuilder.hpp"
+#include "utils/Metrics.hpp"
+#include <chrono>
+#include <opentelemetry/context/runtime_context.h>
 
 using asio::ip::tcp;
 
@@ -20,7 +23,9 @@ public:
 		  strand_(asio::make_strand(stream_.get_executor())),
 		  remote_endpoint_str_(get_remote_endpoint_string()),
           is_closing_(false),
-          logger_(logger) {}
+          logger_(logger) {
+            MetricsManager::GetInstance().CreateActiveConnectionsGauge()->Add(1);
+          }
 
     void start() {
         // 在開始讀寫之前，必須先進行 TLS 交握
@@ -37,14 +42,14 @@ public:
             }));
     }
 	~Session() {
-        // 在解構時，我們只記錄日誌。關閉 socket 的操作將透過 RAII 和非同步操作的生命週期管理來自動處理。
-        // 當這個日誌被印出時，代表 Session 物件即將被銷毀。
-		logger_->info("Session destroyed for client: {}", remote_endpoint_str_);
+        // 在解構時，僅更新指標和記錄日誌
+        MetricsManager::GetInstance().CreateActiveConnectionsGauge()->Add(-1);
+        logger_->info("Session destroyed for client: {}", remote_endpoint_str_);
 	}
 private:
-    void close_session() {
+    void close_session(std::shared_ptr<Session> self) {
         // 使用 strand 確保線程安全
-        asio::post(strand_, [this, self = shared_from_this()]() {
+        asio::post(strand_, [this, self]() {
             if (is_closing_) return;
             is_closing_ = true;
             
@@ -90,7 +95,7 @@ private:
                     // shared_ptr `self` 會在此回呼函式結束時被釋放，
                     // 如果沒有其他非同步操作持有它，Session 將被銷毀。
                     // 在銷毀前，我們主動關閉 socket。
-                    close_session();
+                    close_session(self);
                     return;
                 }
 
@@ -102,7 +107,17 @@ private:
                     auto result = parser_.try_parse(frame);
 
                     if (result == ParseResult::SUCCESS) {
+                        MetricsManager::GetInstance().CreateRequestCounter()->Add(1);
+                        auto start_time = std::chrono::high_resolution_clock::now();
+
                         process_message(frame);
+
+                        // 計算處理時間並記錄
+                        auto end_time = std::chrono::high_resolution_clock::now();
+                        std::chrono::duration<double, std::milli> processing_time = end_time - start_time;
+                        auto context = opentelemetry::context::RuntimeContext::GetCurrent();
+                        MetricsManager::GetInstance().CreateLatencyHistogram()->Record(processing_time.count(), context);
+
                         // 成功解析一個，繼續迴圈嘗試下一個
                     } else if (result == ParseResult::NEED_MORE_DATA) {
                         // 資料不夠了，發起下一次讀取，然後退出迴圈
@@ -111,7 +126,7 @@ private:
                     } else { // INVALID_HEADER or other errors
                         logger_->error("Invalid frame from {}. Closing connection.", remote_endpoint_str_);
                         // 不再需要手動呼叫 close()。直接返回，讓 Session 物件自然銷毀。
-                        close_session();
+                        close_session(self);
                         return;
                     }
                 }
@@ -159,7 +174,7 @@ private:
 
                 if (ec) {
                     logger_->error("Write error to {}: {}", remote_endpoint_str_, ec.message());
-                    close_session(); // 寫入失敗也關閉 session
+                    close_session(self); // 寫入失敗也關閉 session
                     return; // 發生錯誤，不再繼續寫入
                 }
 

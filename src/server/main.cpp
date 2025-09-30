@@ -6,10 +6,13 @@
 #include "utils/Logger.hpp"
 #include <asio/signal_set.hpp>
 #include <iostream>
+#include "utils/Metrics.hpp"
 
 int main() {
 
     // _CrtSetDbgFlag ( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+    // _CrtSetBreakAlloc(717);
+
 
     // 初始化spdlog的執行緒池(8192個佇列大小, 1個執行緒)
     spdlog::init_thread_pool(8192, 1); 
@@ -23,6 +26,8 @@ int main() {
     }
 
     try {
+        logger->info("Initializing metrics...");
+        MetricsManager::GetInstance(); // 首次呼叫 GetInstance() 會自動初始化指標系統
         
         logger->info("Starting server...");
 
@@ -59,6 +64,9 @@ int main() {
     } catch (const std::exception& e) {
         logger->critical("Exception: {}", e.what());
     }
+
+    MetricsManager::Shutdown();
+    logger->info("Metrics system shut down.");
     // 確保所有日誌都被寫入檔案
     spdlog::shutdown();
 
