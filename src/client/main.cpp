@@ -234,12 +234,21 @@ int main(int argc, char* argv[]) {
         // 為每個執行緒準備一個獨立的延遲向量
         std::vector<std::vector<uint64_t>> all_threads_latencies(concurrent_clients);
 
-        // 啟動所有工作執行緒
+        // 分批啟動所有工作執行緒
         std::vector<std::thread> threads;
+        
+        const int ramp_up_period_ms = 100; // 每隔 100 毫秒啟動一批客戶端
+
         for (int i = 0; i < concurrent_clients; ++i) {
-            // 將對應的延遲向量指標傳遞給執行緒
             threads.emplace_back(run_qps_thread, std::ref(message), sleep_time, &all_threads_latencies[i], logger);
+            
+            // 每啟動一個執行緒就稍微等待一下
+            // 這樣可以避免瞬間的 CPU 衝擊
+            if ((i + 1) % 4 == 0) { // 每啟動 4 個就等一下
+                std::this_thread::sleep_for(std::chrono::milliseconds(ramp_up_period_ms));
+            }
         }
+
 
         // 開始計時
         auto start_time = std::chrono::high_resolution_clock::now();
