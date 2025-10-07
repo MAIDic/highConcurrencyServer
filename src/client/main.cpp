@@ -227,30 +227,69 @@ int main(int argc, char* argv[]) {
         const int sleep_time = std::stoi(argv[3]);
         const std::string message = argv[4];
 
+        const int batch_size = 5;  // 每批 5 個連線
+        const int batch_delay_ms = 100;  // 批次間隔 100ms
+        const int total_batches = (concurrent_clients + batch_size - 1) / batch_size;
+
         logger->info("Starting QPS test with: Concurrent Clients={}, Duration={}s, Sleep Time={}ms, Target={}:{}", 
                             concurrent_clients, duration_seconds, sleep_time, HOST, PORT);
+        logger->info("----------------------------------------");
+
+        logger->info("Batch configuration: {} batches, {} clients per batch, {}ms delay between batches",
+                    total_batches, batch_size, batch_delay_ms);
         logger->info("----------------------------------------");
         
         // 為每個執行緒準備一個獨立的延遲向量
         std::vector<std::vector<uint64_t>> all_threads_latencies(concurrent_clients);
 
-        // 分批啟動所有工作執行緒
+        // ✅ 修改：分批啟動所有工作執行緒
         std::vector<std::thread> threads;
-        
-        const int ramp_up_period_ms = 100; // 每隔 100 毫秒啟動一批客戶端
+        threads.reserve(concurrent_clients);
 
-        for (int i = 0; i < concurrent_clients; ++i) {
-            threads.emplace_back(run_qps_thread, std::ref(message), sleep_time, &all_threads_latencies[i], logger);
+        auto batch_start_time = std::chrono::high_resolution_clock::now();
+        
+        for (int batch = 0; batch < total_batches; ++batch) {
+            int batch_start_idx = batch * batch_size;
+            int batch_end_idx = std::min(batch_start_idx + batch_size, concurrent_clients);
+            int current_batch_size = batch_end_idx - batch_start_idx;
             
-            // 每啟動一個執行緒就稍微等待一下
-            // 這樣可以避免瞬間的 CPU 衝擊
-            if ((i + 1) % 4 == 0) { // 每啟動 4 個就等一下
-                std::this_thread::sleep_for(std::chrono::milliseconds(ramp_up_period_ms));
+            logger->info("Starting batch {}/{}: clients {}-{} ({} clients)", 
+                        batch + 1, total_batches, 
+                        batch_start_idx + 1, batch_end_idx, current_batch_size);
+            
+            // 啟動本批次的執行緒
+            for (int i = batch_start_idx; i < batch_end_idx; ++i) {
+                threads.emplace_back(run_qps_thread, std::ref(message), sleep_time, 
+                                   &all_threads_latencies[i], logger);
+            }
+            
+            // 批次間暫停（最後一批不需要等待）
+            if (batch < total_batches - 1) {
+                std::this_thread::sleep_for(std::chrono::milliseconds(batch_delay_ms));
             }
         }
+        
+        auto batch_end_time = std::chrono::high_resolution_clock::now();
+        auto batch_duration = std::chrono::duration_cast<std::chrono::seconds>(
+            batch_end_time - batch_start_time);
 
 
-        // 開始計時
+        logger->info("All {} threads started in {} seconds", 
+                    concurrent_clients, batch_duration.count());
+        logger->info("----------------------------------------");
+
+        // ✅ 修正：在正式計時前，重置所有計數器和延遲數據
+        // 這樣可以排除執行緒啟動階段（ramp-up）產生的數據，確保 QPS 計算的準確性
+        logger->info("Resetting counters before starting the measurement timer...");
+        success_count.store(0);
+        failure_count.store(0);
+        content_match_count.store(0);
+        total_latency_ns.store(0);
+        for (auto& latencies : all_threads_latencies) {
+            latencies.clear();
+        }
+
+        // 開始計時（測試時間）
         auto start_time = std::chrono::high_resolution_clock::now();
 
         // 等待指定的測試時間
@@ -259,6 +298,10 @@ int main(int argc, char* argv[]) {
         // 時間到，設定停止旗標
         stop_test.store(true);
         
+        logger->info("Test duration reached, stopping all clients...");
+
+
+    
         // 等待所有執行緒結束
         for (auto& t : threads) {
             if (t.joinable()) {
