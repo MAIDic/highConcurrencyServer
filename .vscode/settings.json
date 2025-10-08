@@ -96,16 +96,5 @@
     "geminicodeassist.customCommands": {
         "e": "用繁體中文解釋這段程式碼，可以提出建議但不要提出修改請求",
         "em": "用繁體中文解釋這段程式碼"
-    },
-    "windows": {
-        "cmake.configureArgs": [
-            "-DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        ]
-    },
-    // Linux 專用設定
-    "linux": {
-        "cmake.configureArgs": [
-            "-DCMAKE_TOOLCHAIN_FILE=/home/bill/vcpkg/scripts/buildsystems/vcpkg.cmake"
-        ]
     }
 }

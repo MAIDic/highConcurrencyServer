@@ -28122,3 +28122,23 @@
 {"date": "2025-10-07", "time": "13:58:33", "level": "info", "process": 20660, "thread": 13812, "message": "All server threads joined. Server stopped."}
 {"date": "2025-10-07", "time": "13:58:33", "level": "info", "process": 20660, "thread": 18128, "message": "Server exited cleanly."}
 {"date": "2025-10-07", "time": "13:58:33", "level": "info", "process": 20660, "thread": 18128, "message": "Metrics system shut down."}
+{"date": "2025-10-07", "time": "14:29:15", "level": "info", "process": 40372, "thread": 34928, "message": "Initializing metrics..."}
+{"date": "2025-10-07", "time": "14:29:15", "level": "info", "process": 40372, "thread": 34928, "message": "Starting server..."}
+{"date": "2025-10-07", "time": "14:29:15", "level": "info", "process": 40372, "thread": 34928, "message": "Port: 12345"}
+{"date": "2025-10-07", "time": "14:29:15", "level": "info", "process": 40372, "thread": 34928, "message": "Detected 8 hardware threads"}
+{"date": "2025-10-07", "time": "14:29:15", "level": "info", "process": 40372, "thread": 34928, "message": "ServerRunner constructed for port 12345"}
+{"date": "2025-10-07", "time": "14:29:15", "level": "info", "process": 40372, "thread": 34928, "message": "Starting server with 8 threads..."}
+{"date": "2025-10-07", "time": "14:48:22", "level": "info", "process": 40372, "thread": 37424, "message": "Stopping server..."}
+{"date": "2025-10-07", "time": "14:48:22", "level": "info", "process": 40372, "thread": 37424, "message": "All server threads joined. Server stopped."}
+{"date": "2025-10-07", "time": "14:48:22", "level": "info", "process": 40372, "thread": 34928, "message": "Server exited cleanly."}
+{"date": "2025-10-07", "time": "14:48:23", "level": "info", "process": 40372, "thread": 34928, "message": "Metrics system shut down."}
+{"date": "2025-10-07", "time": "14:50:16", "level": "info", "process": 54284, "thread": 21448, "message": "Initializing metrics..."}
+{"date": "2025-10-07", "time": "14:50:16", "level": "info", "process": 54284, "thread": 21448, "message": "Starting server..."}
+{"date": "2025-10-07", "time": "14:50:16", "level": "info", "process": 54284, "thread": 21448, "message": "Port: 12345"}
+{"date": "2025-10-07", "time": "14:50:16", "level": "info", "process": 54284, "thread": 21448, "message": "Detected 8 hardware threads"}
+{"date": "2025-10-07", "time": "14:50:16", "level": "info", "process": 54284, "thread": 21448, "message": "ServerRunner constructed for port 12345"}
+{"date": "2025-10-07", "time": "14:50:16", "level": "info", "process": 54284, "thread": 21448, "message": "Starting server with 8 threads..."}
+{"date": "2025-10-07", "time": "14:50:20", "level": "info", "process": 54284, "thread": 23516, "message": "Stopping server..."}
+{"date": "2025-10-07", "time": "14:50:20", "level": "info", "process": 54284, "thread": 23516, "message": "All server threads joined. Server stopped."}
+{"date": "2025-10-07", "time": "14:50:20", "level": "info", "process": 54284, "thread": 21448, "message": "Server exited cleanly."}
+{"date": "2025-10-07", "time": "14:50:21", "level": "info", "process": 54284, "thread": 21448, "message": "Metrics system shut down."}
