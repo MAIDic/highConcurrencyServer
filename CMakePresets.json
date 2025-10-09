@@ -5,11 +5,11 @@
             "name": "windows-vcpkg-debug",
             "displayName": "Windows Debug with vcpkg",
             "description": "Configures for Windows using the vcpkg toolchain.",
-            "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build",
+            "generator": "Visual Studio 16 2019",
+            "binaryDir": "${sourceDir}/build/windows",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+                "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
             }
         },
         {
@@ -17,10 +17,10 @@
             "displayName": "Linux Debug with vcpkg",
             "description": "Configures for Linux using the vcpkg toolchain.",
             "generator": "Ninja",
-            "binaryDir": "${sourceDir}/build",
+            "binaryDir": "${sourceDir}/build/linux",
             "cacheVariables": {
                 "CMAKE_BUILD_TYPE": "Debug",
-                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+                "CMAKE_TOOLCHAIN_FILE": "/home/bill/vcpkg/scripts/buildsystems/vcpkg.cmake"
             }
         }
     ],

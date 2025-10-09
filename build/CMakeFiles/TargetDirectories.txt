@@ -1,6 +1,0 @@
-/home/bill/highConcurrencyServer/build/CMakeFiles/server-app.dir
-/home/bill/highConcurrencyServer/build/CMakeFiles/client-app.dir
-/home/bill/highConcurrencyServer/build/CMakeFiles/run-tests.dir
-/home/bill/highConcurrencyServer/build/CMakeFiles/test.dir
-/home/bill/highConcurrencyServer/build/CMakeFiles/edit_cache.dir
-/home/bill/highConcurrencyServer/build/CMakeFiles/rebuild_cache.dir
