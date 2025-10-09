@@ -1,5 +1,5 @@
-if(EXISTS "C:/Users/bill/Desktop/Project/highConcurrencyServer/build/run-tests[1]_tests.cmake")
-  include("C:/Users/bill/Desktop/Project/highConcurrencyServer/build/run-tests[1]_tests.cmake")
+if(EXISTS "/home/bill/highConcurrencyServer/build/run-tests[1]_tests.cmake")
+  include("/home/bill/highConcurrencyServer/build/run-tests[1]_tests.cmake")
 else()
   add_test(run-tests_NOT_BUILT run-tests_NOT_BUILT)
 endif()

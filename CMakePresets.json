@@ -1,39 +1,37 @@
 {
-  "version": 3,
-  "configurePresets": [
-    {
-      "name": "windows-vcpkg-debug",
-      "displayName": "Windows Debug with vcpkg",
-      "description": "Configures for Windows using the vcpkg toolchain.",
-      "hidden": "${hostSystem.name != 'Windows'}",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_TOOLCHAIN_FILE": "C:/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      }
-    },
-    {
-      "name": "linux-vcpkg-debug",
-      "displayName": "Linux Debug with vcpkg",
-      "description": "Configures for Linux using the vcpkg toolchain.",
-      "hidden": "${hostSystem.name != 'Linux'}",
-      "generator": "Ninja",
-      "binaryDir": "${sourceDir}/build",
-      "cacheVariables": {
-        "CMAKE_BUILD_TYPE": "Debug",
-        "CMAKE_TOOLCHAIN_FILE": "/home/bill/vcpkg/scripts/buildsystems/vcpkg.cmake"
-      }
-    }
-  ],
-  "buildPresets": [
-    {
-      "name": "windows-build",
-      "configurePreset": "windows-vcpkg-debug"
-    },
-    {
-      "name": "linux-build",
-      "configurePreset": "linux-vcpkg-debug"
-    }
-  ]
+    "version": 4,
+    "configurePresets": [
+        {
+            "name": "windows-vcpkg-debug",
+            "displayName": "Windows Debug with vcpkg",
+            "description": "Configures for Windows using the vcpkg toolchain.",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            }
+        },
+        {
+            "name": "linux-vcpkg-debug",
+            "displayName": "Linux Debug with vcpkg",
+            "description": "Configures for Linux using the vcpkg toolchain.",
+            "generator": "Ninja",
+            "binaryDir": "${sourceDir}/build",
+            "cacheVariables": {
+                "CMAKE_BUILD_TYPE": "Debug",
+                "CMAKE_TOOLCHAIN_FILE": "$env{VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+            }
+        }
+    ],
+    "buildPresets": [
+        {
+            "name": "windows-build",
+            "configurePreset": "windows-vcpkg-debug"
+        },
+        {
+            "name": "linux-build",
+            "configurePreset": "linux-vcpkg-debug"
+        }
+    ]
 }

@@ -1,0 +1,496 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "server-app"
+		}
+	],
+	"backtrace" : 2,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"_add_executable",
+			"add_executable",
+			"target_link_libraries",
+			"set_target_properties",
+			"include",
+			"_find_package",
+			"find_package",
+			"set_property",
+			"_OpenSSL_target_add_dependencies",
+			"find_dependency",
+			"find_required_dependencies",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"/home/bill/vcpkg/scripts/buildsystems/vcpkg.cmake",
+			"CMakeLists.txt",
+			"/home/bill/vcpkg/installed/x64-linux/share/spdlog/spdlogConfigTargets.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/spdlog/spdlogConfig.cmake",
+			"/usr/share/cmake-3.28/Modules/FindOpenSSL.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/openssl/vcpkg-cmake-wrapper.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/openssl/OpenSSLConfig.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/opentelemetry-cpp/opentelemetry-cpp-exporters_prometheus-target.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/opentelemetry-cpp/opentelemetry-cpp-config.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/prometheus-cpp/prometheus-cpp-targets.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/prometheus-cpp/prometheus-cpp-config.cmake",
+			"/usr/share/cmake-3.28/Modules/CMakeFindDependencyMacro.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/opentelemetry-cpp/find-package-support-functions.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/civetweb/civetweb-targets.cmake",
+			"/home/bill/vcpkg/installed/x64-linux/share/civetweb/civetweb-config.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 1
+			},
+			{
+				"command" : 1,
+				"file" : 1,
+				"line" : 36,
+				"parent" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 600,
+				"parent" : 1
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 38,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 1,
+				"line" : 28,
+				"parent" : 0
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 20,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 896,
+				"parent" : 5
+			},
+			{
+				"file" : 3,
+				"parent" : 6
+			},
+			{
+				"command" : 4,
+				"file" : 3,
+				"line" : 42,
+				"parent" : 7
+			},
+			{
+				"file" : 2,
+				"parent" : 8
+			},
+			{
+				"command" : 3,
+				"file" : 2,
+				"line" : 60,
+				"parent" : 9
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 21,
+				"parent" : 0
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 850,
+				"parent" : 11
+			},
+			{
+				"file" : 5,
+				"parent" : 12
+			},
+			{
+				"command" : 5,
+				"file" : 5,
+				"line" : 37,
+				"parent" : 13
+			},
+			{
+				"file" : 6,
+				"parent" : 14
+			},
+			{
+				"command" : 6,
+				"file" : 6,
+				"line" : 88,
+				"parent" : 15
+			},
+			{
+				"command" : 4,
+				"file" : 0,
+				"line" : 850,
+				"parent" : 16
+			},
+			{
+				"file" : 5,
+				"parent" : 17
+			},
+			{
+				"command" : 5,
+				"file" : 5,
+				"line" : 37,
+				"parent" : 18
+			},
+			{
+				"file" : 4,
+				"parent" : 19
+			},
+			{
+				"command" : 8,
+				"file" : 4,
+				"line" : 744,
+				"parent" : 20
+			},
+			{
+				"command" : 7,
+				"file" : 4,
+				"line" : 189,
+				"parent" : 21
+			},
+			{
+				"command" : 6,
+				"file" : 1,
+				"line" : 22,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 896,
+				"parent" : 23
+			},
+			{
+				"file" : 8,
+				"parent" : 24
+			},
+			{
+				"command" : 4,
+				"file" : 8,
+				"line" : 214,
+				"parent" : 25
+			},
+			{
+				"file" : 7,
+				"parent" : 26
+			},
+			{
+				"command" : 3,
+				"file" : 7,
+				"line" : 60,
+				"parent" : 27
+			},
+			{
+				"command" : 10,
+				"file" : 8,
+				"line" : 207,
+				"parent" : 25
+			},
+			{
+				"command" : 9,
+				"file" : 12,
+				"line" : 142,
+				"parent" : 29
+			},
+			{
+				"command" : 6,
+				"file" : 11,
+				"line" : 76,
+				"parent" : 30
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 896,
+				"parent" : 31
+			},
+			{
+				"file" : 10,
+				"parent" : 32
+			},
+			{
+				"command" : 4,
+				"file" : 10,
+				"line" : 48,
+				"parent" : 33
+			},
+			{
+				"file" : 9,
+				"parent" : 34
+			},
+			{
+				"command" : 3,
+				"file" : 9,
+				"line" : 76,
+				"parent" : 35
+			},
+			{
+				"command" : 9,
+				"file" : 10,
+				"line" : 36,
+				"parent" : 33
+			},
+			{
+				"command" : 6,
+				"file" : 11,
+				"line" : 76,
+				"parent" : 37
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 896,
+				"parent" : 38
+			},
+			{
+				"file" : 14,
+				"parent" : 39
+			},
+			{
+				"command" : 4,
+				"file" : 14,
+				"line" : 47,
+				"parent" : 40
+			},
+			{
+				"file" : 13,
+				"parent" : 41
+			},
+			{
+				"command" : 3,
+				"file" : 13,
+				"line" : 69,
+				"parent" : 42
+			},
+			{
+				"command" : 3,
+				"file" : 13,
+				"line" : 61,
+				"parent" : 42
+			},
+			{
+				"command" : 11,
+				"file" : 1,
+				"line" : 37,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "-g -std=gnu++20"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 3,
+					"define" : "OPENTELEMETRY_ABI_VERSION_NO=1"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "SPDLOG_COMPILED_LIB"
+				},
+				{
+					"backtrace" : 3,
+					"define" : "SPDLOG_FMT_EXTERNAL"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 45,
+					"path" : "/home/bill/highConcurrencyServer/include"
+				},
+				{
+					"backtrace" : 3,
+					"isSystem" : true,
+					"path" : "/home/bill/vcpkg/installed/x64-linux/include"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					3
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"id" : "server-app::@6890427a1f51a3e7e1df",
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "-g",
+				"role" : "flags"
+			},
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_common.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_resources.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_version.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_logs.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_trace.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_metrics.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_exporter_prometheus.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libspdlogd.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 10,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libfmtd.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libssl.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libcrypto.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 22,
+				"fragment" : "-ldl",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_metrics.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_resources.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libopentelemetry_common.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 28,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libprometheus-cpp-pull.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 28,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libprometheus-cpp-core.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 36,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libcivetweb-cpp.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 43,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libcivetweb.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 44,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libz.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 36,
+				"fragment" : "/home/bill/vcpkg/installed/x64-linux/debug/lib/libz.a",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX"
+	},
+	"name" : "server-app",
+	"nameOnDisk" : "server-app",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				0
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 2,
+			"compileGroupIndex" : 0,
+			"path" : "src/server/main.cpp",
+			"sourceGroupIndex" : 0
+		}
+	],
+	"type" : "EXECUTABLE"
+}

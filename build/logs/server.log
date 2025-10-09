@@ -1,0 +1,7 @@
+{"date": "2025-10-09", "time": "13:55:20", "level": "info", "process": 87308, "thread": 87308, "message": "Initializing metrics..."}
+{"date": "2025-10-09", "time": "13:55:20", "level": "info", "process": 87308, "thread": 87308, "message": "Starting server..."}
+{"date": "2025-10-09", "time": "13:55:20", "level": "info", "process": 87308, "thread": 87308, "message": "Port: 12345"}
+{"date": "2025-10-09", "time": "13:55:20", "level": "info", "process": 87308, "thread": 87308, "message": "Detected 8 hardware threads"}
+{"date": "2025-10-09", "time": "13:55:20", "level": "critical", "process": 87308, "thread": 87308, "message": "Failed to set up SSL context: use_certificate_chain_file: No such file or directory"}
+{"date": "2025-10-09", "time": "13:55:20", "level": "critical", "process": 87308, "thread": 87308, "message": "Exception: use_certificate_chain_file: No such file or directory"}
+{"date": "2025-10-09", "time": "13:55:22", "level": "info", "process": 87308, "thread": 87308, "message": "Metrics system shut down."}

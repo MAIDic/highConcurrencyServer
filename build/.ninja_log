@@ -1,0 +1,9 @@
+# ninja log v5
+2	2040	1759988772079582779	CMakeFiles/run-tests.dir/tests/FrameParser_test.cpp.o	6a063b98fc80be35
+2042	2312	1759988772347575765	run-tests	142b0bc47ad95d64
+2042	2312	1759988772347575765	run-tests[1]_tests.cmake	142b0bc47ad95d64
+2042	2312	1759988772347575765	/home/bill/highConcurrencyServer/build/run-tests[1]_tests.cmake	142b0bc47ad95d64
+2	5595	1759988775631476555	CMakeFiles/client-app.dir/src/client/main.cpp.o	199fe2c4534bbc01
+5596	6515	1759988776547447080	client-app	7be618503381782f
+2	10720	1759988780751325590	CMakeFiles/server-app.dir/src/server/main.cpp.o	641a7f8492196017
+10720	13286	1759988783315251243	server-app	3ac5a94778f8440e
