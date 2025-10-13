@@ -1,0 +1,71 @@
+# Build directories
+build/
+build/windows/
+build/linux/
+
+# CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+*.cmake
+
+# Compiled binaries
+*.exe
+*.out
+*.app
+*.dll
+*.so
+*.dylib
+
+# Object files
+*.o
+*.obj
+
+# Static libraries
+*.a
+*.lib
+
+# Log files
+logs/
+*.log
+
+# IDE specific files
+# Visual Studio
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.vcxproj.user
+
+# CLion / JetBrains
+.idea/
+cmake-build-*/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Certificates and keys (安全考量,不應上傳私鑰)
+certs/*.key
+certs/*.pem
+!certs/README.md
+
+# Testing artifacts
+Testing/
+CTestTestfile.cmake
+
+# vcpkg installed packages (optional,依需求決定)
+vcpkg_installed/
+
+# OpenTelemetry metrics data
+*.db
+
+# Temporary files
+*~
+*.swp
+*.swo
+*.tmp

@@ -1,6 +1,0 @@
-C:/Users/bill/Desktop/Project/highConcurrencyServer/build/windows/CMakeFiles/server-app.dir
-C:/Users/bill/Desktop/Project/highConcurrencyServer/build/windows/CMakeFiles/client-app.dir
-C:/Users/bill/Desktop/Project/highConcurrencyServer/build/windows/CMakeFiles/run-tests.dir
-C:/Users/bill/Desktop/Project/highConcurrencyServer/build/windows/CMakeFiles/RUN_TESTS.dir
-C:/Users/bill/Desktop/Project/highConcurrencyServer/build/windows/CMakeFiles/ALL_BUILD.dir
-C:/Users/bill/Desktop/Project/highConcurrencyServer/build/windows/CMakeFiles/ZERO_CHECK.dir
