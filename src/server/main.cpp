@@ -37,7 +37,7 @@ int main() {
         logger->info("Port: {}", port);
         logger->info("Detected {} hardware threads", thread_count);
 
-        ServerRunner server(port, thread_count, logger);
+        ServerRunner server(port, thread_count/2, logger);
 
         // 使用一個獨立的 io_context 來處理SIGINT, SIGTERM信號
         asio::io_context signal_context;

@@ -20,17 +20,21 @@ std::atomic<uint64_t> success_count(0);
 std::atomic<uint64_t> failure_count(0);
 std::atomic<uint64_t> content_match_count(0); // 新增：用於計算內容驗證成功的次數
 std::atomic<uint64_t> total_latency_ns(0);    // 新增：用於累計所有成功請求的總延遲（奈秒）
-std::atomic<bool> stop_test(false);
+std::atomic<int>  established_connections_count(0); // 新增：用於追蹤已建立的連線數
+std::atomic<bool> test_can_start(false);            // 新增：作為測試開始的信號旗標
+std::atomic<bool> stop_test(false);                 // 測試結束的信號旗標
 
 class QpsClient {
 public:
-    // 修改建構函式以接收 SSL context
-    QpsClient(asio::io_context& io_context, asio::ssl::context& ssl_context, const std::string& message, int sleep_time, std::vector<uint64_t>* thread_latencies, std::shared_ptr<spdlog::logger> logger)
-        : stream_(io_context, ssl_context),
-          resolver_(io_context),
+    // 修改建構函式以接收 io_context, ssl_context 的引用
+    QpsClient(asio::io_context& io_context, asio::ssl::context& ssl_context, const std::string& message, int sleep_time, std::shared_ptr<spdlog::logger> logger)
+        : strand_(asio::make_strand(io_context)),
+          stream_(io_context, ssl_context),
+          resolver_(strand_),
           message_(message),
           request_body_(message.begin(), message.end()),
           sleep_time_(sleep_time),
+          timer_(strand_),
           logger_(logger)
     {
         // 設定 SNI (Server Name Indication)，這對於許多 TLS 伺服器是必需的
@@ -39,17 +43,6 @@ public:
             asio::error_code ec{static_cast<int>(::ERR_get_error()), asio::error::get_ssl_category()};
             throw asio::system_error{ec};
         }
-
-        // 設定 TLS 版本和選項，與伺服器端對應
-        ssl_context.set_options(
-            asio::ssl::context::default_workarounds |
-            asio::ssl::context::no_sslv2 |
-            asio::ssl::context::no_sslv3 |
-            asio::ssl::context::no_tlsv1 |
-            asio::ssl::context::no_tlsv1_1);
-
-        endpoints_ = resolver_.resolve(HOST, std::to_string(PORT));
-        thread_latencies_ = thread_latencies; // 儲存指標
 
         // 預先打包好要發送的封包，避免在迴圈中重複建立
         FrameHeader header;
@@ -65,144 +58,156 @@ public:
         asio::buffer_copy(asio::buffer(request_packet_), buffers);
     }
 
-    // 執行 QPS 測試迴圈
+    // 非同步啟動客戶端
     void run() {
-        try {
-            // 連線到 TCP 層
-            asio::connect(stream_.lowest_layer(), endpoints_);
+        // 使用 strand 來 post resolve 操作，確保執行緒安全
+        resolver_.async_resolve(HOST, std::to_string(PORT),
+            asio::bind_executor(strand_, std::bind(&QpsClient::on_resolve, this, std::placeholders::_1, std::placeholders::_2)));
+    }
 
-            // 進行 TLS 交握
-            stream_.handshake(asio::ssl::stream_base::client);
-            logger_->info("TLS handshake successful with server {}:{}", HOST, PORT);
-
-            // 當 stop_test 旗標為 false 時，持續收發
-            while (!stop_test.load(std::memory_order_relaxed)) {
-                send_and_receive(sleep_time_);
+    void stop() {
+        asio::post(strand_, [this]() {
+            if (stream_.lowest_layer().is_open()) {
+                asio::error_code ec;
+                stream_.lowest_layer().cancel(ec);
+                timer_.cancel(ec);
             }
-
-            // --- 優雅關閉 TLS 連線 ---
-            // 這會發送 close_notify 訊息給伺服器
-            asio::error_code ec;
-            stream_.shutdown(ec);
-        } catch (const asio::system_error& e) {
-            // 優先捕捉 asio::system_error 來記錄詳細資訊
-            failure_count++;
-            if (logger_) {
-                logger_->error("Connection failed with system error: {} (Category: {}, Code: {})", 
-                            e.what(), e.code().category().name(), e.code().value());
-            }
-        } catch (const std::exception& e) {
-            // 連線過程出錯，增加失敗計數並記錄錯誤
-            failure_count++;
-            // 取得 logger，如果存在就記錄錯誤
-            if (logger_) {
-                logger_->error("Connection failed: {}", e.what());
-            }
-        }
+        });
     }
 
 private:
-    void send_and_receive(int sleep_time) {
-        try {
-            // 記錄請求開始時間
-            auto request_start_time = std::chrono::high_resolution_clock::now();
-
-            // 1. 同步寫入 (已預先打包好)
-            asio::write(stream_, asio::buffer(request_packet_));
-
-            // 2. 同步讀取回音 Header
-            FrameHeader reply_header;
-            asio::read(stream_, asio::buffer(&reply_header, sizeof(FrameHeader)));
-            decode_header(reply_header);
-
-            // 3. 同步讀取回音 Body
-            const size_t body_length = reply_header.total_length - sizeof(FrameHeader);
-            if (body_length > 0) {
-                std::vector<char> reply_body(body_length);
-                asio::read(stream_, asio::buffer(reply_body));
-                
-                // 啟用內容驗證
-                if (reply_body.size() == request_body_.size() && 
-                    std::equal(reply_body.begin(), reply_body.end(), request_body_.begin())) {
-                    content_match_count++;
-                }
-            }
-            // 只要成功收發（沒有拋出例外），就計為一次成功請求
-            success_count++;
-
-            // 計算並累加本次請求的延遲
-            auto request_end_time = std::chrono::high_resolution_clock::now();
-            auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(request_end_time - request_start_time);
-            uint64_t latency_ns = latency.count();
-            total_latency_ns += latency_ns;
-
-            // 直接寫入執行緒自己的向量，無需加鎖
-            thread_latencies_->push_back(latency_ns);
-
-            std::this_thread::sleep_for(std::chrono::milliseconds(sleep_time)); 
-            
-        } catch (const std::exception& e) {
+    void on_resolve(const asio::error_code& ec, tcp::resolver::results_type endpoints) {
+        if (ec) {
+            logger_->error("Resolve failed: {}", ec.message());
             failure_count++;
-            if (auto logger = spdlog::get("client")) {
-                logger->error("Send/Receive error: {}", e.what());
-            }
-            stop_test.store(true, std::memory_order_relaxed);
-        } catch (...) {
+            return;
+        }
+        asio::async_connect(stream_.lowest_layer(), endpoints,
+            asio::bind_executor(strand_, std::bind(&QpsClient::on_connect, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+
+    void on_connect(const asio::error_code& ec, const tcp::endpoint& endpoint) {
+        if (ec) {
+            logger_->error("Connect to {} failed: {}", endpoint.address().to_string(), ec.message());
             failure_count++;
-            if (auto logger = spdlog::get("client")) {
-                logger->error("Send/Receive error: Unknown exception occurred.");
+            return;
+        }
+        stream_.async_handshake(asio::ssl::stream_base::client,
+            asio::bind_executor(strand_, std::bind(&QpsClient::on_handshake, this, std::placeholders::_1)));
+    }
+
+    void on_handshake(const asio::error_code& ec) {
+        if (ec) {
+            logger_->error("Handshake failed: {}", ec.message());
+            failure_count++;
+            return;
+        }
+        established_connections_count++; // 連線成功建立，計數器+1
+        wait_for_start_signal(); // 不直接開始，而是等待開始信號
+    }
+
+    void wait_for_start_signal() {
+        // 使用 timer 週期性檢查 test_can_start 旗標
+        timer_.expires_after(std::chrono::milliseconds(10));
+        timer_.async_wait(asio::bind_executor(strand_, [this](const asio::error_code& ec) {
+            if (ec) return; // timer被取消
+
+            if (test_can_start.load(std::memory_order_relaxed)) {
+                do_request(); // 收到開始信號，開始發送請求
+            } else {
+                wait_for_start_signal(); // 繼續等待
             }
-            stop_test.store(true, std::memory_order_relaxed);
+        }));
+    }
+
+    void do_request() {
+        if (stop_test.load(std::memory_order_relaxed)) {
+            asio::error_code ec;
+            stream_.async_shutdown([this](const asio::error_code&){});
+            return;
+        }
+
+        request_start_time_ = std::chrono::high_resolution_clock::now();
+        asio::async_write(stream_, asio::buffer(request_packet_),
+            asio::bind_executor(strand_, std::bind(&QpsClient::on_write, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+
+    void on_write(const asio::error_code& ec, std::size_t /*length*/) {
+        if (ec) {
+            logger_->error("Write failed: {}", ec.message());
+            failure_count++;
+            return;
+        }
+        reply_header_ = std::make_shared<FrameHeader>();
+        asio::async_read(stream_, asio::buffer(reply_header_.get(), sizeof(FrameHeader)),
+            asio::bind_executor(strand_, std::bind(&QpsClient::on_read_header, this, std::placeholders::_1, std::placeholders::_2)));
+    }
+
+    void on_read_header(const asio::error_code& ec, std::size_t /*length*/) {
+        if (ec) {
+            logger_->error("Read header failed: {}", ec.message());
+            failure_count++;
+            return;
+        }
+        decode_header(*reply_header_);
+        const size_t body_length = reply_header_->total_length - sizeof(FrameHeader);
+        if (body_length > 0) {
+            reply_body_.resize(body_length);
+            asio::async_read(stream_, asio::buffer(reply_body_),
+                asio::bind_executor(strand_, std::bind(&QpsClient::on_read_body, this, std::placeholders::_1, std::placeholders::_2)));
+        } else {
+            process_reply();
         }
     }
 
+    void on_read_body(const asio::error_code& ec, std::size_t /*length*/) {
+        if (ec) {
+            logger_->error("Read body failed: {}", ec.message());
+            failure_count++;
+            return;
+        }
+        process_reply();
+    }
+
+    void process_reply() {
+        if (reply_body_.size() == request_body_.size() &&
+            std::equal(reply_body_.begin(), reply_body_.end(), request_body_.begin())) {
+            content_match_count++;
+        }
+        success_count++;
+
+        auto request_end_time = std::chrono::high_resolution_clock::now();
+        auto latency = std::chrono::duration_cast<std::chrono::nanoseconds>(request_end_time - request_start_time_);
+        total_latency_ns += latency.count();
+
+        // 使用 timer 來實現非阻塞的 sleep
+        timer_.expires_after(std::chrono::milliseconds(sleep_time_));
+        timer_.async_wait(asio::bind_executor(strand_, [this](const asio::error_code& ec){
+            if (!ec) {
+                do_request();
+            }
+        }));
+    }
+
+    asio::strand<asio::io_context::executor_type> strand_;
     tcp::resolver resolver_;
     asio::ssl::stream<tcp::socket> stream_;
-    tcp::resolver::results_type endpoints_;
     std::string message_;
     std::vector<char> request_body_;
     std::vector<char> request_packet_; // 預先打包好的完整封包
+    std::shared_ptr<FrameHeader> reply_header_;
+    std::vector<char> reply_body_;
     int sleep_time_;                   // 每次請求後的睡眠時間 (毫秒)
-    std::vector<uint64_t>* thread_latencies_; // 指向執行緒局部延遲向量的指標
+    asio::steady_timer timer_;
+    std::chrono::high_resolution_clock::time_point request_start_time_;
     std::shared_ptr<spdlog::logger> logger_; // 日誌記錄器
 };
 
-void run_qps_thread(const std::string& message, int sleep_time, std::vector<uint64_t>* thread_latencies, std::shared_ptr<spdlog::logger> logger) {
-    try {
-        // 為每個執行緒建立自己的 io_context 和 ssl_context
-        asio::io_context io_context;
-        asio::ssl::context ssl_context(asio::ssl::context::tls_client);
-
-        // 設定客戶端去驗證伺服器憑證
-        // 這是生產環境中防止中間人攻擊的關鍵步驟
-        ssl_context.set_verify_mode(asio::ssl::verify_peer);
-        // 載入用於驗證伺服器憑證的 CA 憑證檔案
-        ssl_context.load_verify_file("certs/server.crt"); // 確保這個 CA 憑證檔存在
-
-        QpsClient client(io_context, ssl_context, message, sleep_time, thread_latencies, logger);
-        client.run();
-    } catch (const asio::system_error& e){
-        if (logger) {
-            // 記錄詳細的錯誤類別、錯誤碼和訊息
-            logger->error("Asio system error in client thread: {} (Category: {}, Code: {})", 
-                        e.what(), e.code().category().name(), e.code().value());
-        }
-    } catch (const std::exception& e) {
-        // 確保執行緒不會因未捕捉的例外而崩潰，並記錄錯誤
-        failure_count++;
-        if (logger) {
-            logger->error("Unhandled exception in client thread: {}", e.what());
-        }
-    } catch (...) {
-        failure_count++;
-        if (logger) {
-            logger->error("Unhandled unknown exception in client thread.");
-        }
-    }
-}
-
-
 int main(int argc, char* argv[]) {
+
+    // 將執行緒向量和日誌記錄器移至 try 區塊外部，以便在 catch 後仍可存取
+    std::vector<std::thread> threads;
+    // 不再需要 per-thread latency vector
 
      // 初始化spdlog的執行緒池(8192個佇列大小, 1個執行緒)
     spdlog::init_thread_pool(8192, 1); 
@@ -226,56 +231,56 @@ int main(int argc, char* argv[]) {
         const int duration_seconds = std::stoi(argv[2]);
         const int sleep_time = std::stoi(argv[3]);
         const std::string message = argv[4];
+        const auto thread_count = std::thread::hardware_concurrency()/2;
 
-        const int batch_size = 5;  // 每批 5 個連線
-        const int batch_delay_ms = 100;  // 批次間隔 100ms
-        const int total_batches = (concurrent_clients + batch_size - 1) / batch_size;
-
-        logger->info("Starting QPS test with: Concurrent Clients={}, Duration={}s, Sleep Time={}ms, Target={}:{}", 
-                            concurrent_clients, duration_seconds, sleep_time, HOST, PORT);
+        logger->info("Starting QPS test with: Concurrent Clients={}, Duration={}s, Sleep Time={}ms, Threads={}, Target={}:{}", 
+                            concurrent_clients, duration_seconds, sleep_time, thread_count, HOST, PORT);
         logger->info("----------------------------------------");
 
-        logger->info("Batch configuration: {} batches, {} clients per batch, {}ms delay between batches",
-                    total_batches, batch_size, batch_delay_ms);
-        logger->info("----------------------------------------");
-        
-        // 為每個執行緒準備一個獨立的延遲向量
-        std::vector<std::vector<uint64_t>> all_threads_latencies(concurrent_clients);
+        asio::io_context io_context;
 
-        // ✅ 修改：分批啟動所有工作執行緒
-        std::vector<std::thread> threads;
-        threads.reserve(concurrent_clients);
+        // 建立 SSL context
+        asio::ssl::context ssl_context(asio::ssl::context::tls_client);
+        ssl_context.set_verify_mode(asio::ssl::verify_peer);
+        ssl_context.load_verify_file("certs/server.crt");
+        ssl_context.set_options(
+            asio::ssl::context::default_workarounds |
+            asio::ssl::context::no_sslv2 |
+            asio::ssl::context::no_sslv3 |
+            asio::ssl::context::no_tlsv1 |
+            asio::ssl::context::no_tlsv1_1);
 
-        auto batch_start_time = std::chrono::high_resolution_clock::now();
-        
-        for (int batch = 0; batch < total_batches; ++batch) {
-            int batch_start_idx = batch * batch_size;
-            int batch_end_idx = std::min(batch_start_idx + batch_size, concurrent_clients);
-            int current_batch_size = batch_end_idx - batch_start_idx;
-            
-            logger->info("Starting batch {}/{}: clients {}-{} ({} clients)", 
-                        batch + 1, total_batches, 
-                        batch_start_idx + 1, batch_end_idx, current_batch_size);
-            
-            // 啟動本批次的執行緒
-            for (int i = batch_start_idx; i < batch_end_idx; ++i) {
-                threads.emplace_back(run_qps_thread, std::ref(message), sleep_time, 
-                                   &all_threads_latencies[i], logger);
-            }
-            
-            // 批次間暫停（最後一批不需要等待）
-            if (batch < total_batches - 1) {
-                std::this_thread::sleep_for(std::chrono::milliseconds(batch_delay_ms));
-            }
+        // 建立所有客戶端實例
+        std::vector<std::shared_ptr<QpsClient>> clients;
+        clients.reserve(concurrent_clients);
+        for (int i = 0; i < concurrent_clients; ++i) {
+            clients.emplace_back(std::make_shared<QpsClient>(io_context, ssl_context, message, sleep_time, logger));
         }
-        
-        auto batch_end_time = std::chrono::high_resolution_clock::now();
-        auto batch_duration = std::chrono::duration_cast<std::chrono::seconds>(
-            batch_end_time - batch_start_time);
 
+        // 啟動所有客戶端
+        for (const auto& client : clients) {
+            client->run();
+        }
 
-        logger->info("All {} threads started in {} seconds", 
-                    concurrent_clients, batch_duration.count());
+        // 建立執行緒池來執行 io_context
+        threads.reserve(thread_count);
+        for (size_t i = 0; i < thread_count; ++i) {
+            threads.emplace_back([&io_context](){ io_context.run(); });
+        }
+
+        logger->info("All {} clients started on {} threads.", concurrent_clients, thread_count);
+        logger->info("----------------------------------------");
+
+        // 等待所有連線都建立完成
+        logger->info("Waiting for all {} connections to be established...", concurrent_clients);
+        auto wait_start_time = std::chrono::steady_clock::now();
+        while (established_connections_count.load() < concurrent_clients) {
+            // 可以在此處加入超時邏輯，以防連線永遠無法全部建立
+            std::this_thread::sleep_for(std::chrono::milliseconds(100));
+            logger->info("... {}/{} connections established.", established_connections_count.load(), concurrent_clients);
+        }
+        auto wait_end_time = std::chrono::steady_clock::now();
+        logger->info("All connections established in {:.2f} seconds.", std::chrono::duration<double>(wait_end_time - wait_start_time).count());
         logger->info("----------------------------------------");
 
         // ✅ 修正：在正式計時前，重置所有計數器和延遲數據
@@ -285,9 +290,9 @@ int main(int argc, char* argv[]) {
         failure_count.store(0);
         content_match_count.store(0);
         total_latency_ns.store(0);
-        for (auto& latencies : all_threads_latencies) {
-            latencies.clear();
-        }
+
+        // 發出「開始測試」的信號
+        test_can_start.store(true);
 
         // 開始計時（測試時間）
         auto start_time = std::chrono::high_resolution_clock::now();
@@ -297,18 +302,15 @@ int main(int argc, char* argv[]) {
 
         // 時間到，設定停止旗標
         stop_test.store(true);
+
+        // 停止所有客戶端並停止 io_context
+        logger->info("Stopping all clients and io_context...");
+        for (const auto& client : clients) {
+            client->stop();
+        }
         
         logger->info("Test duration reached, stopping all clients...");
 
-
-    
-        // 等待所有執行緒結束
-        for (auto& t : threads) {
-            if (t.joinable()) {
-                t.join();
-            }
-        }
-        
         auto end_time = std::chrono::high_resolution_clock::now();
         std::chrono::duration<double> elapsed = end_time - start_time;
 
@@ -323,36 +325,12 @@ int main(int argc, char* argv[]) {
             double qps = final_success_count / elapsed.count();
             double avg_latency_ms = (total_latency_ns.load() / 1e6) / final_success_count; // 轉換為毫秒
             double accuracy_rate = (static_cast<double>(content_match_count.load()) / final_success_count) * 100.0;
-
-            // 計算 Min, Max, P99 延遲
-            double min_latency_ms = 0;
-            double max_latency_ms = 0;
-            double p99_latency_ms = 0;
-
-            // 將所有執行緒的延遲數據合併到一個向量中
-            std::vector<uint64_t> combined_latencies;
-            combined_latencies.reserve(final_success_count); // 預分配記憶體
-            for(const auto& thread_lats : all_threads_latencies) {
-                combined_latencies.insert(combined_latencies.end(), thread_lats.begin(), thread_lats.end());
-            }
-
-            std::sort(combined_latencies.begin(), combined_latencies.end());
-            if (!combined_latencies.empty()) {
-                min_latency_ms = combined_latencies.front() / 1e6;
-                max_latency_ms = combined_latencies.back() / 1e6;
-                // 修正 P99 索引計算，使其更穩健
-                size_t p99_index = static_cast<size_t>(combined_latencies.size() * 0.99);
-                if (p99_index >= combined_latencies.size()) {
-                    p99_index = combined_latencies.empty() ? 0 : combined_latencies.size() - 1; // 邊界保護
-                }
-                p99_latency_ms = combined_latencies[p99_index] / 1e6;
-            }
-
+            
+            // 注意：延遲分位數計算（Min, Max, P99）在這個非同步模型中被移除了，
+            // 因為跨執行緒安全地收集大量延遲數據點會增加複雜性。
+            // 平均延遲仍然是一個很好的效能指標。
             logger->info("Average QPS: {:.2f} req/s", qps);
             logger->info("Average Latency: {:.2f} ms", avg_latency_ms);
-            logger->info("  - Min Latency: {:.2f} ms", min_latency_ms);
-            logger->info("  - Max Latency: {:.2f} ms", max_latency_ms);
-            logger->info("  - P99 Latency: {:.2f} ms", p99_latency_ms);
             logger->info("Packet Accuracy: {:.2f} %", accuracy_rate);
 
         } else if (elapsed.count() > 0) {
@@ -365,10 +343,31 @@ int main(int argc, char* argv[]) {
     } catch (const std::exception& e) {
         
         logger->critical("Unhandled exception in main: {}", e.what());
-        spdlog::shutdown(); // 確保所有日誌都被寫入檔案
-        return 1; // 發生未處理的例外時，以非零狀態碼退出
+        // 不在此處返回，讓程式流程繼續到下面的清理區塊
     }
 
-    spdlog::shutdown(); // 確保所有日誌都被寫入檔案
-    return 0;
+    // --- 關鍵修正：統一的執行緒清理區塊 ---
+    // 無論程式是正常結束還是因 try-catch 捕獲到例外，
+    // 都會執行到這裡來安全地 join 所有已啟動的執行緒。
+    
+    // 確保在 join 之前發送停止信號，以避免死鎖
+    stop_test.store(true);
+
+    if (!threads.empty()) {
+        logger->info("Waiting for all client threads to terminate...");
+        for (auto& t : threads) {
+            if (t.joinable()) {
+                try {
+                    t.join();
+                } catch (const std::system_error& e) {
+                    // join 本身也可能在極端情況下拋出例外
+                    logger->error("Error joining thread: {}", e.what());
+                }
+            }
+        }
+        logger->info("All client threads have been joined.");
+    }
+
+    spdlog::shutdown(); // 在所有操作（包括執行緒清理）完成後，最後關閉日誌系統
+    return 0; // 正常退出
 }
