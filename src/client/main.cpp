@@ -15,18 +15,22 @@ using asio::ip::tcp;
 const std::string HOST = "127.0.0.1";
 const short PORT = 12345;
 
+// --- 重連設定 ---
+const int RECONNECT_DELAY_MS = 1000; // 重連延遲時間 (毫秒)
+const int MAX_RECONNECT_ATTEMPTS = 5; // 最大重連次數
+
 // --- 全域計數器與旗標 ---
 std::atomic<uint64_t> success_count(0);
 std::atomic<uint64_t> failure_count(0);
-std::atomic<uint64_t> content_match_count(0); // 新增：用於計算內容驗證成功的次數
-std::atomic<uint64_t> total_latency_ns(0);    // 新增：用於累計所有成功請求的總延遲（奈秒）
-std::atomic<int>  established_connections_count(0); // 新增：用於追蹤已建立的連線數
-std::atomic<bool> test_can_start(false);            // 新增：作為測試開始的信號旗標
+std::atomic<uint64_t> content_match_count(0); // 用於計算內容驗證成功的次數
+std::atomic<uint64_t> total_latency_ns(0);    // 用於累計所有成功請求的總延遲（奈秒）
+std::atomic<int>  established_connections_count(0); // 用於追蹤已建立的連線數
+std::atomic<bool> test_can_start(false);            // 作為測試開始的信號旗標
 std::atomic<bool> stop_test(false);                 // 測試結束的信號旗標
 
 class QpsClient {
 public:
-    // 修改建構函式以接收 io_context, ssl_context 的引用
+    // 建構函式接收 io_context, ssl_context 的引用
     QpsClient(asio::io_context& io_context, asio::ssl::context& ssl_context, const std::string& message, int sleep_time, std::shared_ptr<spdlog::logger> logger)
         : strand_(asio::make_strand(io_context)),
           stream_(io_context, ssl_context),
@@ -35,10 +39,10 @@ public:
           request_body_(message.begin(), message.end()),
           sleep_time_(sleep_time),
           timer_(strand_),
-          logger_(logger)
+          logger_(logger),
+          reconnect_attempts_(0)
     {
-        // 設定 SNI (Server Name Indication)，這對於許多 TLS 伺服器是必需的
-        // 尤其是當一台伺服器擁有多個憑證時
+        // 設定 SNI (Server Name Indication)
         if (!SSL_set_tlsext_host_name(stream_.native_handle(), HOST.c_str())) {
             asio::error_code ec{static_cast<int>(::ERR_get_error()), asio::error::get_ssl_category()};
             throw asio::system_error{ec};
@@ -76,11 +80,28 @@ public:
     }
 
 private:
+    void try_reconnect(const std::string& reason) {
+        if (reconnect_attempts_ < MAX_RECONNECT_ATTEMPTS) {
+            reconnect_attempts_++;
+            logger_->warn("Connection failed due to: {}. Attempting to reconnect in {}ms... (Attempt {}/{})", reason, RECONNECT_DELAY_MS, reconnect_attempts_, MAX_RECONNECT_ATTEMPTS);
+
+            // 使用 timer 實現非阻塞的延遲重連
+            timer_.expires_after(std::chrono::milliseconds(RECONNECT_DELAY_MS));
+            timer_.async_wait(asio::bind_executor(strand_, [this](const asio::error_code& ec){
+                if (!ec) {
+                    run(); // 重新開始解析和連線流程
+                }
+            }));
+        } else {
+            logger_->error("Connection failed after {} attempts. Giving up.", MAX_RECONNECT_ATTEMPTS);
+            failure_count++; // 達到最大重試次數後，才計為一次最終失敗
+        }
+    }
+
     void on_resolve(const asio::error_code& ec, tcp::resolver::results_type endpoints) {
         if (ec) {
-            logger_->error("Resolve failed: {}", ec.message());
-            failure_count++;
-            return;
+            try_reconnect("Resolve failed: " + ec.message());
+            return; // 交給重連機制處理
         }
         asio::async_connect(stream_.lowest_layer(), endpoints,
             asio::bind_executor(strand_, std::bind(&QpsClient::on_connect, this, std::placeholders::_1, std::placeholders::_2)));
@@ -88,9 +109,8 @@ private:
 
     void on_connect(const asio::error_code& ec, const tcp::endpoint& endpoint) {
         if (ec) {
-            logger_->error("Connect to {} failed: {}", endpoint.address().to_string(), ec.message());
-            failure_count++;
-            return;
+            try_reconnect("Connect to " + endpoint.address().to_string() + " failed: " + ec.message());
+            return; // 交給重連機制處理
         }
         stream_.async_handshake(asio::ssl::stream_base::client,
             asio::bind_executor(strand_, std::bind(&QpsClient::on_handshake, this, std::placeholders::_1)));
@@ -98,10 +118,10 @@ private:
 
     void on_handshake(const asio::error_code& ec) {
         if (ec) {
-            logger_->error("Handshake failed: {}", ec.message());
-            failure_count++;
-            return;
+            try_reconnect("Handshake failed: " + ec.message());
+            return; // 交給重連機制處理
         }
+        reconnect_attempts_ = 0; // 連線成功，重置重連計數器
         established_connections_count++; // 連線成功建立，計數器+1
         wait_for_start_signal(); // 不直接開始，而是等待開始信號
     }
@@ -134,8 +154,7 @@ private:
 
     void on_write(const asio::error_code& ec, std::size_t /*length*/) {
         if (ec) {
-            logger_->error("Write failed: {}", ec.message());
-            failure_count++;
+            handle_io_error("Write", ec);
             return;
         }
         reply_header_ = std::make_shared<FrameHeader>();
@@ -145,8 +164,7 @@ private:
 
     void on_read_header(const asio::error_code& ec, std::size_t /*length*/) {
         if (ec) {
-            logger_->error("Read header failed: {}", ec.message());
-            failure_count++;
+            handle_io_error("Read header", ec);
             return;
         }
         decode_header(*reply_header_);
@@ -162,11 +180,20 @@ private:
 
     void on_read_body(const asio::error_code& ec, std::size_t /*length*/) {
         if (ec) {
-            logger_->error("Read body failed: {}", ec.message());
-            failure_count++;
+            handle_io_error("Read body", ec);
             return;
         }
         process_reply();
+    }
+
+    void handle_io_error(const std::string& operation, const asio::error_code& ec) {
+        if (ec == asio::error::eof || ec == asio::error::connection_reset) {
+            logger_->warn("{} failed with a disconnect error: {}. This client will stop.", operation, ec.message());
+        } else if (ec != asio::error::operation_aborted) {
+            logger_->error("{} failed: {}", operation, ec.message());
+        }
+        // 對於I/O錯誤，我們通常不重連，而是將其計為失敗並停止該客戶端
+        failure_count++;
     }
 
     void process_reply() {
@@ -200,14 +227,13 @@ private:
     int sleep_time_;                   // 每次請求後的睡眠時間 (毫秒)
     asio::steady_timer timer_;
     std::chrono::high_resolution_clock::time_point request_start_time_;
+    int reconnect_attempts_; // 新增：重連嘗試次數
     std::shared_ptr<spdlog::logger> logger_; // 日誌記錄器
 };
 
 int main(int argc, char* argv[]) {
 
-    // 將執行緒向量和日誌記錄器移至 try 區塊外部，以便在 catch 後仍可存取
     std::vector<std::thread> threads;
-    // 不再需要 per-thread latency vector
 
      // 初始化spdlog的執行緒池(8192個佇列大小, 1個執行緒)
     spdlog::init_thread_pool(8192, 1); 
@@ -276,8 +302,12 @@ int main(int argc, char* argv[]) {
         auto wait_start_time = std::chrono::steady_clock::now();
         while (established_connections_count.load() < concurrent_clients) {
             // 可以在此處加入超時邏輯，以防連線永遠無法全部建立
+            if (std::chrono::duration<double>(std::chrono::steady_clock::now() - wait_start_time).count() > 30.0) {
+                logger->error("Timeout: Not all clients could establish a connection within 30 seconds.");
+                break; // 超時，跳出迴圈
+            }
             std::this_thread::sleep_for(std::chrono::milliseconds(100));
-            logger->info("... {}/{} connections established.", established_connections_count.load(), concurrent_clients);
+            logger->trace("... {}/{} connections established.", established_connections_count.load(), concurrent_clients);
         }
         auto wait_end_time = std::chrono::steady_clock::now();
         logger->info("All connections established in {:.2f} seconds.", std::chrono::duration<double>(wait_end_time - wait_start_time).count());
@@ -346,10 +376,6 @@ int main(int argc, char* argv[]) {
         // 不在此處返回，讓程式流程繼續到下面的清理區塊
     }
 
-    // --- 關鍵修正：統一的執行緒清理區塊 ---
-    // 無論程式是正常結束還是因 try-catch 捕獲到例外，
-    // 都會執行到這裡來安全地 join 所有已啟動的執行緒。
-    
     // 確保在 join 之前發送停止信號，以避免死鎖
     stop_test.store(true);
 
