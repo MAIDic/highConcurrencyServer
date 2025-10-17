@@ -166,10 +166,16 @@ private:
             return; // 佇列已空，無需寫入
         }
 
-        // 使用佇列最前端的封包進行非同步寫入
-        asio::async_write(stream_, asio::buffer(write_packets_.front()),
+        // 準備要寫入的 buffer 序列
+        write_buffers_.clear();
+        for (const auto& packet : write_packets_) {
+            write_buffers_.push_back(asio::buffer(packet));
+        }
+
+        // 將佇列中的所有封包一次性寫入
+        asio::async_write(stream_, write_buffers_,
             // 同樣將寫入的回呼函式綁定到 strand
-            asio::bind_executor(strand_, [this, self = shared_from_this()](const asio::error_code& ec, std::size_t /*length*/) {
+            asio::bind_executor(strand_, [this, self = shared_from_this(), packets_to_write = write_packets_.size()](const asio::error_code& ec, std::size_t /*length*/) {
                 if(is_closing_) return;
 
                 if (ec) {
@@ -179,10 +185,12 @@ private:
                 }
 
                 // 寫入成功，從佇列中移除已傳送的封包
-                write_packets_.pop_front();
+                write_packets_.erase(write_packets_.begin(), write_packets_.begin() + packets_to_write);
 
-                // 繼續寫入佇列中的下一個封包
-                start_packet_write();
+                // 如果在寫入過程中又有新的封包加入，則繼續寫入
+                if (!write_packets_.empty()) {
+                    start_packet_write();
+                }
             }));
     }
 
@@ -193,6 +201,7 @@ private:
     std::array<char, 1024> read_buffer_; // 用於接收原始資料的緩衝區
     FrameParser parser_; // Session 包含一個 FrameParser 成員
     std::deque<std::vector<char>> write_packets_; // 寫入封包的佇列
+    std::vector<asio::const_buffer> write_buffers_; // 用於批次寫入的緩衝區
     bool is_closing_; // 是否正在關閉
     std::shared_ptr<spdlog::logger> logger_; // 用於記錄日誌
 

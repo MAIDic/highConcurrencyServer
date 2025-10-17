@@ -73,8 +73,10 @@ public:
         asio::post(strand_, [this]() {
             if (stream_.lowest_layer().is_open()) {
                 asio::error_code ec;
-                stream_.lowest_layer().cancel(ec);
                 timer_.cancel(ec);
+                // 改為執行優雅的 SSL 關閉，而不是直接取消 socket 操作。
+                // 這會嘗試發送 "close_notify" 給伺服器。
+                stream_.async_shutdown([this](const asio::error_code&){});
             }
         });
     }
